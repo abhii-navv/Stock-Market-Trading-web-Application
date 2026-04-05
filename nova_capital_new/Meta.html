@@ -1,0 +1,643 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+        <link rel="icon" type="image/png" href="Bull-removebg-preview.png">
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meta Dashboard | Nova Capital</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --green-deep:   #003d30;
+            --green-mid:    #00694f;
+            --green-bright: #00c896;
+            --gold:         #c9a84c;
+            --gold-light:   #f0d080;
+            --off-white:    #f4f1eb;
+            --cream:        #faf8f3;
+            --text-dark:    #1a1a1a;
+            --text-muted:   #6b7280;
+            --white:        #ffffff;
+            --positive:     #22c55e;
+            --negative:     #ef4444;
+        }
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body { font-family:'DM Sans',sans-serif; background:var(--off-white); color:var(--text-dark); }
+
+        /* ── HEADER ── */
+        header {
+            background: var(--green-deep);
+            position: sticky; top:0; z-index:100;
+        }
+        header::before {
+            content:''; position:absolute;
+            width:400px; height:400px; border-radius:50%;
+            background:radial-gradient(circle,rgba(0,200,150,0.07),transparent);
+            top:-150px; right:-100px; pointer-events:none;
+        }
+        .header-inner {
+            max-width:1280px; margin:0 auto; padding:0 40px;
+            height:68px; display:flex; justify-content:space-between;
+            align-items:center; position:relative; z-index:1;
+        }
+        .header-logo {
+            font-family:'Playfair Display',serif; font-size:20px; font-weight:700;
+            color:var(--white); display:flex; align-items:center; gap:10px;
+            text-decoration:none;
+        }
+        .header-logo i { color:var(--gold); }
+        .header-nav { display:flex; align-items:center; gap:4px; }
+        .header-nav a {
+            text-decoration:none; color:rgba(255,255,255,0.6);
+            font-size:14px; font-weight:500; padding:8px 16px;
+            border-radius:9px; transition:all 0.2s;
+        }
+        .header-nav a:hover { background:rgba(255,255,255,0.07); color:var(--white); }
+        .header-nav a.active { background:rgba(0,200,150,0.12); color:var(--green-bright); }
+
+        /* ── TICKER ── */
+        .ticker-bar {
+            background:rgba(0,0,0,0.25);
+            border-bottom:1px solid rgba(255,255,255,0.06);
+            overflow:hidden; height:36px; display:flex; align-items:center;
+        }
+        .ticker-track {
+            display:flex; white-space:nowrap;
+            animation:tickerScroll 40s linear infinite;
+        }
+        .ticker-track:hover { animation-play-state:paused; }
+        @keyframes tickerScroll { 0%{transform:translateX(0)} 100%{transform:translateX(-50%)} }
+        .t-item {
+            display:inline-flex; align-items:center; gap:8px;
+            padding:0 28px; font-family:'DM Mono',monospace; font-size:12px;
+            border-right:1px solid rgba(255,255,255,0.06);
+        }
+        .t-sym { font-weight:600; color:rgba(255,255,255,0.8); }
+        .t-price { color:rgba(255,255,255,0.45); }
+        .t-up   { color:var(--positive); font-weight:600; }
+        .t-down { color:var(--negative); font-weight:600; }
+
+        /* ── PAGE HERO ── */
+        .page-hero {
+            background:var(--green-deep); padding:40px 40px 0;
+            position:relative; overflow:hidden;
+        }
+        .page-hero::after {
+            content:''; position:absolute;
+            width:500px; height:500px; border-radius:50%;
+            background:radial-gradient(circle,rgba(0,200,150,0.08),transparent);
+            top:-200px; right:-100px; pointer-events:none;
+        }
+        .page-hero-inner {
+            max-width:1280px; margin:0 auto;
+            display:flex; justify-content:space-between; align-items:flex-end;
+            position:relative; z-index:1; padding-bottom:32px;
+        }
+        .stock-identity { display:flex; align-items:center; gap:20px; }
+        .stock-logo-hero {
+            width:64px; height:64px; border-radius:16px;
+            background:rgba(255,255,255,0.08);
+            border:1px solid rgba(255,255,255,0.1);
+            display:flex; align-items:center; justify-content:center;
+            overflow:hidden;
+        }
+        .stock-logo-hero img { width:48px; height:48px; object-fit:contain; padding:4px; }
+        .stock-hero-name {
+            font-family:'Playfair Display',serif;
+            font-size:32px; font-weight:700; color:var(--white);
+            letter-spacing:-0.3px; line-height:1.1;
+        }
+        .stock-hero-ticker {
+            font-family:'DM Mono',monospace; font-size:13px;
+            color:rgba(255,255,255,0.4); margin-top:4px;
+            letter-spacing:1px;
+        }
+        .stock-hero-price-wrap { text-align:right; }
+        .stock-hero-price {
+            font-family:'DM Mono',monospace; font-size:36px;
+            font-weight:600; color:var(--white); line-height:1;
+        }
+        .stock-hero-price span { font-size:20px; opacity:0.5; }
+        .stock-live-badge {
+            display:inline-flex; align-items:center; gap:6px;
+            margin-top:8px; font-size:12px; color:var(--green-bright);
+            font-weight:600;
+        }
+        .live-dot {
+            width:6px; height:6px; background:var(--green-bright);
+            border-radius:50%; animation:blink 1.5s infinite;
+        }
+        @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
+
+        /* ── MAIN ── */
+        .main-wrap { max-width:1280px; margin:0 auto; padding:36px 40px 80px; }
+
+        /* Stats strip */
+        .stats-strip {
+            display:grid; grid-template-columns:repeat(3,1fr);
+            gap:16px; margin-bottom:28px;
+        }
+        .stat-pill {
+            background:var(--white); border:1px solid rgba(0,0,0,0.06);
+            border-radius:16px; padding:20px 24px;
+            display:flex; align-items:center; gap:16px;
+            transition:all 0.3s ease;
+        }
+        .stat-pill:hover { box-shadow:0 8px 32px rgba(0,61,48,0.08); transform:translateY(-2px); }
+        .stat-pill-icon {
+            width:44px; height:44px; border-radius:12px;
+            background:rgba(0,105,79,0.08);
+            display:flex; align-items:center; justify-content:center;
+            font-size:18px; color:var(--green-mid); flex-shrink:0;
+        }
+        .stat-pill-label { font-size:12px; color:var(--text-muted); margin-bottom:4px; }
+        .stat-pill-value {
+            font-family:'DM Mono',monospace; font-size:22px;
+            font-weight:600; color:var(--text-dark);
+        }
+        .stat-pill-value.green { color:var(--green-mid); }
+
+        /* Chart card */
+        .card {
+            background:var(--white); border:1px solid rgba(0,0,0,0.06);
+            border-radius:20px; padding:28px; margin-bottom:20px;
+        }
+        .card-header {
+            display:flex; justify-content:space-between; align-items:center;
+            margin-bottom:24px;
+        }
+        .card-title {
+            font-family:'Playfair Display',serif; font-size:18px;
+            font-weight:700; color:var(--text-dark);
+        }
+        .card-badge {
+            display:flex; align-items:center; gap:6px;
+            background:rgba(0,105,79,0.07); border-radius:8px;
+            padding:6px 12px; font-size:12px; color:var(--green-mid); font-weight:600;
+        }
+        canvas { width:100%!important; height:320px!important; }
+
+        /* Trade card */
+        .trade-card {
+            background:var(--green-deep); border-radius:20px;
+            padding:32px; margin-bottom:20px; position:relative; overflow:hidden;
+        }
+        .trade-card::before {
+            content:''; position:absolute;
+            width:300px; height:300px; border-radius:50%;
+            background:radial-gradient(circle,rgba(0,200,150,0.1),transparent);
+            top:-100px; right:-80px; pointer-events:none;
+        }
+        .trade-card-title {
+            font-family:'Playfair Display',serif; font-size:18px;
+            font-weight:700; color:var(--white); margin-bottom:6px;
+        }
+        .trade-card-sub { font-size:13px; color:rgba(255,255,255,0.4); margin-bottom:28px; }
+        .trade-controls {
+            display:flex; align-items:center; gap:12px; flex-wrap:wrap;
+        }
+        .trade-input-wrap { position:relative; flex:1; min-width:160px; }
+        .trade-input-wrap i {
+            position:absolute; left:16px; top:50%; transform:translateY(-50%);
+            color:rgba(255,255,255,0.3); font-size:14px;
+        }
+        .trade-input {
+            width:100%; padding:14px 16px 14px 42px;
+            background:rgba(255,255,255,0.06);
+            border:1px solid rgba(255,255,255,0.1);
+            border-radius:12px; color:var(--white);
+            font-size:15px; font-family:'DM Mono',monospace;
+            outline:none; transition:all 0.2s;
+        }
+        .trade-input::placeholder { color:rgba(255,255,255,0.25); }
+        .trade-input:focus { border-color:var(--green-bright); background:rgba(255,255,255,0.09); }
+        .btn-buy {
+            padding:14px 32px; border-radius:12px; border:none;
+            background:var(--green-bright); color:var(--green-deep);
+            font-size:15px; font-weight:700; cursor:pointer;
+            transition:all 0.25s; font-family:'DM Sans',sans-serif;
+            display:flex; align-items:center; gap:8px;
+        }
+        .btn-buy:hover { background:#00e0aa; transform:translateY(-2px); box-shadow:0 8px 24px rgba(0,200,150,0.35); }
+        .btn-sell {
+            padding:14px 32px; border-radius:12px;
+            border:1px solid rgba(239,68,68,0.4);
+            background:rgba(239,68,68,0.08); color:#ff7070;
+            font-size:15px; font-weight:700; cursor:pointer;
+            transition:all 0.25s; font-family:'DM Sans',sans-serif;
+            display:flex; align-items:center; gap:8px;
+        }
+        .btn-sell:hover { background:rgba(239,68,68,0.18); border-color:rgba(239,68,68,0.7); transform:translateY(-2px); }
+
+        /* Cost preview */
+        .cost-preview {
+            margin-top:16px; padding:14px 18px;
+            background:rgba(255,255,255,0.04);
+            border:1px solid rgba(255,255,255,0.07);
+            border-radius:12px; font-size:13px;
+            color:rgba(255,255,255,0.5);
+            display:flex; gap:24px; flex-wrap:wrap;
+        }
+        .cost-item strong { color:rgba(255,255,255,0.85); font-family:'DM Mono',monospace; }
+
+        /* Table */
+        .table-wrap { overflow-x:auto; }
+        table { width:100%; border-collapse:collapse; }
+        thead tr { border-bottom:2px solid var(--off-white); }
+        th {
+            padding:12px 16px; text-align:left;
+            font-size:11px; font-weight:700; letter-spacing:1.5px;
+            text-transform:uppercase; color:var(--text-muted);
+        }
+        td { padding:14px 16px; font-size:14px; border-bottom:1px solid var(--off-white); }
+        tbody tr:hover { background:var(--cream); }
+        tbody tr:last-child td { border-bottom:none; }
+        .badge-buy {
+            display:inline-flex; align-items:center; gap:5px;
+            background:rgba(34,197,94,0.1); color:var(--positive);
+            padding:4px 10px; border-radius:20px; font-size:12px; font-weight:700;
+        }
+        .badge-sell {
+            display:inline-flex; align-items:center; gap:5px;
+            background:rgba(239,68,68,0.1); color:var(--negative);
+            padding:4px 10px; border-radius:20px; font-size:12px; font-weight:700;
+        }
+        .empty-state {
+            text-align:center; padding:48px 20px;
+            color:var(--text-muted); font-size:14px;
+        }
+        .empty-state i { font-size:32px; margin-bottom:12px; display:block; opacity:0.3; }
+
+        /* ── FOOTER ── */
+        footer {
+            background:var(--green-deep); padding:48px 40px 28px;
+            position:relative; overflow:hidden;
+        }
+        footer::before {
+            content:''; position:absolute;
+            width:400px; height:400px; border-radius:50%;
+            background:radial-gradient(circle,rgba(0,200,150,0.06),transparent);
+            bottom:-160px; right:-80px; pointer-events:none;
+        }
+        .footer-inner {
+            max-width:1280px; margin:0 auto;
+            display:grid; grid-template-columns:2fr 1fr 1fr;
+            gap:60px; margin-bottom:40px; position:relative; z-index:1;
+        }
+        .footer-brand { font-family:'Playfair Display',serif; font-size:20px; font-weight:700;
+            color:var(--white); display:flex; align-items:center; gap:10px; margin-bottom:12px; }
+        .footer-brand i { color:var(--gold); }
+        .footer-desc { font-size:13px; color:rgba(255,255,255,0.35); line-height:1.8; max-width:280px; }
+        .footer-col-title { font-size:11px; font-weight:700; letter-spacing:2px;
+            text-transform:uppercase; color:rgba(255,255,255,0.3); margin-bottom:16px; }
+        .footer-links { list-style:none; }
+        .footer-links li { margin-bottom:10px; }
+        .footer-links a { font-size:13px; color:rgba(255,255,255,0.5); text-decoration:none; transition:color 0.2s; }
+        .footer-links a:hover { color:var(--white); }
+        .footer-bottom {
+            max-width:1280px; margin:0 auto;
+            border-top:1px solid rgba(255,255,255,0.07);
+            padding-top:24px; text-align:center;
+            font-size:13px; color:rgba(255,255,255,0.25);
+            position:relative; z-index:1;
+        }
+
+        @media(max-width:768px) {
+            .header-inner { padding:0 20px; }
+            .page-hero { padding:28px 20px 0; }
+            .page-hero-inner { flex-direction:column; align-items:flex-start; gap:20px; }
+            .stock-hero-price-wrap { text-align:left; }
+            .main-wrap { padding:24px 20px 60px; }
+            .stats-strip { grid-template-columns:1fr; }
+            .trade-controls { flex-direction:column; }
+            .btn-buy,.btn-sell { width:100%; justify-content:center; }
+            .footer-inner { grid-template-columns:1fr; gap:28px; }
+            footer { padding:40px 20px 24px; }
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="header-inner">
+        <a href="dash1.php" class="header-logo"><i class="fas fa-chart-line"></i> NOVA CAPITAL</a>
+        <nav class="header-nav">
+            <a href="dash1.php">Dashboard</a>
+            <a href="dashboard.html">News</a>
+            <a href="stock-history.php">Transactions</a>
+            <a href="main.html" class="active">Watchlist</a>
+        </nav>
+    </div>
+    <div class="ticker-bar">
+        <div class="ticker-track">
+            <div class="t-item"><span class="t-sym">AAPL</span><span class="t-price">$182.63</span><span class="t-up">▲+1.4%</span></div>
+            <div class="t-item"><span class="t-sym">MSFT</span><span class="t-price">$417.32</span><span class="t-up">▲+0.8%</span></div>
+            <div class="t-item"><span class="t-sym">GOOG</span><span class="t-price">$171.23</span><span class="t-up">▲+2.1%</span></div>
+            <div class="t-item"><span class="t-sym">AMZN</span><span class="t-price">$182.54</span><span class="t-down">▼-0.3%</span></div>
+            <div class="t-item"><span class="t-sym">META</span><span class="t-price">$493.17</span><span class="t-up">▲+1.7%</span></div>
+            <div class="t-item"><span class="t-sym">TSLA</span><span class="t-price">$176.95</span><span class="t-down">▼-1.2%</span></div>
+            <div class="t-item"><span class="t-sym">AAPL</span><span class="t-price">$182.63</span><span class="t-up">▲+1.4%</span></div>
+            <div class="t-item"><span class="t-sym">MSFT</span><span class="t-price">$417.32</span><span class="t-up">▲+0.8%</span></div>
+            <div class="t-item"><span class="t-sym">GOOG</span><span class="t-price">$171.23</span><span class="t-up">▲+2.1%</span></div>
+            <div class="t-item"><span class="t-sym">AMZN</span><span class="t-price">$182.54</span><span class="t-down">▼-0.3%</span></div>
+            <div class="t-item"><span class="t-sym">META</span><span class="t-price">$493.17</span><span class="t-up">▲+1.7%</span></div>
+            <div class="t-item"><span class="t-sym">TSLA</span><span class="t-price">$176.95</span><span class="t-down">▼-1.2%</span></div>
+        </div>
+    </div>
+</header>
+
+<!-- PAGE HERO -->
+<div class="page-hero">
+    <div class="page-hero-inner">
+        <div class="stock-identity">
+            <div class="stock-logo-hero"><img src="meta.png" alt="Meta Platforms"></div>
+            <div>
+                <div class="stock-hero-name">Meta Platforms</div>
+                <div class="stock-hero-ticker">META · NASDAQ</div>
+            </div>
+        </div>
+        <div class="stock-hero-price-wrap">
+            <div class="stock-hero-price"><span>$</span><span id="heroPrice">100.00</span></div>
+            <div class="stock-live-badge"><span class="live-dot"></span> Live Price</div>
+        </div>
+    </div>
+</div>
+
+<main class="main-wrap">
+
+    <!-- Stats -->
+    <div class="stats-strip">
+        <div class="stat-pill">
+            <div class="stat-pill-icon"><i class="fas fa-dollar-sign"></i></div>
+            <div>
+                <div class="stat-pill-label">Current Price</div>
+                <div class="stat-pill-value">$<span id="currentPrice">100.00</span></div>
+            </div>
+        </div>
+        <div class="stat-pill">
+            <div class="stat-pill-icon"><i class="fas fa-wallet"></i></div>
+            <div>
+                <div class="stat-pill-label">Account Balance</div>
+                <div class="stat-pill-value green">$<span id="balance">10000.00</span></div>
+            </div>
+        </div>
+        <div class="stat-pill">
+            <div class="stat-pill-icon"><i class="fas fa-layer-group"></i></div>
+            <div>
+                <div class="stat-pill-label">Owned Shares</div>
+                <div class="stat-pill-value"><span id="ownedStocks">0</span></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Chart -->
+    <div class="card">
+        <div class="card-header">
+            <div class="card-title">Live Price Chart</div>
+            <div class="card-badge"><i class="fas fa-circle" style="font-size:8px;color:var(--positive)"></i> Updating</div>
+        </div>
+        <canvas id="stockChart"></canvas>
+    </div>
+
+    <!-- Trade -->
+    <div class="trade-card">
+        <div class="trade-card-title">Place Order</div>
+        <div class="trade-card-sub">Buy or sell META at the current live price</div>
+        <div class="trade-controls">
+            <div class="trade-input-wrap">
+                <i class="fas fa-hashtag"></i>
+                <input type="number" id="amount" placeholder="Quantity" min="1" class="trade-input" oninput="updateCostPreview()">
+            </div>
+            <button onclick="buyStock()" class="btn-buy"><i class="fas fa-arrow-up"></i> Buy</button>
+            <button onclick="sellStock()" class="btn-sell"><i class="fas fa-arrow-down"></i> Sell</button>
+        </div>
+        <div class="cost-preview">
+            <span>Est. Cost: <strong id="estCost">—</strong></span>
+            <span>Fee (0.5%): <strong id="estFee">—</strong></span>
+            <span>Total: <strong id="estTotal">—</strong></span>
+        </div>
+    </div>
+
+    <!-- History -->
+    <div class="card">
+        <div class="card-header">
+            <div class="card-title">Transaction History</div>
+            <div class="card-badge"><i class="fas fa-history"></i> META</div>
+        </div>
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Date & Time</th>
+                        <th>Type</th>
+                        <th>Quantity</th>
+                        <th>Price / Share</th>
+                    </tr>
+                </thead>
+                <tbody id="historyTable">
+                    <tr><td colspan="4"><div class="empty-state"><i class="fas fa-receipt"></i>No transactions yet</div></td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</main>
+
+<footer>
+    <div class="footer-inner">
+        <div>
+            <div class="footer-brand"><i class="fas fa-chart-line"></i> NOVA CAPITAL</div>
+            <p class="footer-desc">Your trusted partner for stock market investments and financial guidance.</p>
+        </div>
+        <div>
+            <div class="footer-col-title">Navigate</div>
+            <ul class="footer-links">
+                <li><a href="dash1.php">Dashboard</a></li>
+                <li><a href="main.html">Watchlist</a></li>
+                <li><a href="stock-history.php">Transactions</a></li>
+            </ul>
+        </div>
+        <div>
+            <div class="footer-col-title">Support</div>
+            <ul class="footer-links">
+                <li><a href="#">Help Center</a></li>
+                <li><a href="#">Contact Us</a></li>
+                <li><a href="#">Terms of Service</a></li>
+            </ul>
+        </div>
+    </div>
+    <div class="footer-bottom">© 2025 Nova Capital. All rights reserved.</div>
+</footer>
+
+<script>
+    let csrfToken = '';
+    let balance = 0;
+    let ownedStocks = 0;
+    let stockPrices = generateStockPrices(100);
+    let labels = Array.from({length:100},(_,i)=>`Day ${i+1}`);
+
+    const ctx = document.getElementById("stockChart").getContext("2d");
+    const stockChart = new Chart(ctx, {
+        type:"line",
+        data:{
+            labels:labels,
+            datasets:[{
+                label:"META Price ($)",
+                data:stockPrices,
+                borderColor:"#00c896",
+                backgroundColor:"rgba(0,200,150,0.07)",
+                borderWidth:2, fill:true, tension:0.3,
+                pointRadius:0, pointHoverRadius:5,
+                pointHoverBackgroundColor:"#00c896"
+            }]
+        },
+        options:{
+            responsive:true,
+            animation:{duration:300},
+            plugins:{
+                legend:{labels:{color:"#6b7280",font:{family:"DM Sans"}}},
+                tooltip:{
+                    backgroundColor:"#003d30",
+                    titleColor:"rgba(255,255,255,0.6)",
+                    bodyColor:"#00c896",
+                    padding:12, cornerRadius:10,
+                    callbacks:{label:ctx=>`$${ctx.parsed.y.toFixed(2)}`}
+                }
+            },
+            scales:{
+                x:{grid:{color:"rgba(0,0,0,0.04)"},ticks:{color:"#9ca3af",font:{size:11}}},
+                y:{grid:{color:"rgba(0,0,0,0.04)"},ticks:{color:"#9ca3af",font:{size:11},callback:v=>`$${v}`}}
+            }
+        }
+    });
+
+    async function initialize() {
+        try {
+            const tokenRes = await fetch('get_csrf_token.php');
+            const tokenData = await tokenRes.json();
+            csrfToken = tokenData.csrf_token;
+
+            const balRes = await fetch('get_balance.php');
+            const balData = await balRes.json();
+            if (balData.success) {
+                balance = parseFloat(balData.balance);
+                document.getElementById("balance").innerText = balance.toFixed(2);
+            }
+
+            const stocksRes = await fetch('get_owned_stocks_meta.php');
+            const stocksData = await stocksRes.json();
+            ownedStocks = parseInt(stocksData.owned) || 0;
+            document.getElementById("ownedStocks").innerText = ownedStocks;
+
+            await loadTransactionHistory();
+        } catch(e) { console.error("Init error:",e); }
+    }
+
+    function generateStockPrices(days) {
+        let prices=[]; let price=100;
+        for(let i=0;i<days;i++){
+            price += (Math.random()-0.5)*5;
+            prices.push(parseFloat(price.toFixed(2)));
+        }
+        return prices;
+    }
+
+    function updateStockPrice() {
+        let last = stockPrices[stockPrices.length-1];
+        let next = parseFloat((last+(Math.random()-0.5)*2).toFixed(2));
+        stockPrices.push(next); stockPrices.shift();
+        labels.push(`Day ${labels.length+1}`); labels.shift();
+        stockChart.data.datasets[0].data = stockPrices;
+        stockChart.data.labels = labels;
+        stockChart.update();
+        const el = document.getElementById("currentPrice");
+        const heroEl = document.getElementById("heroPrice");
+        el.innerText = next;
+        heroEl.innerText = next;
+        el.style.color = next > last ? "var(--positive)" : next < last ? "var(--negative)" : "inherit";
+        updateCostPreview();
+    }
+
+    function updateCostPreview() {
+        const qty = parseInt(document.getElementById("amount").value) || 0;
+        const price = stockPrices[stockPrices.length-1];
+        if(qty > 0) {
+            const cost = qty * price;
+            const fee = cost * 0.005;
+            document.getElementById("estCost").innerText = `$${cost.toFixed(2)}`;
+            document.getElementById("estFee").innerText = `$${fee.toFixed(2)}`;
+            document.getElementById("estTotal").innerText = `$${(cost+fee).toFixed(2)}`;
+        } else {
+            document.getElementById("estCost").innerText = "—";
+            document.getElementById("estFee").innerText = "—";
+            document.getElementById("estTotal").innerText = "—";
+        }
+    }
+
+    async function loadTransactionHistory() {
+        try {
+            const res = await fetch('get_transactions.php');
+            const data = await res.json();
+            if(data.success) {
+                const tbody = document.getElementById("historyTable");
+                const filtered = data.transactions.filter(tx=>tx.stock_symbol==='META');
+                if(filtered.length===0) {
+                    tbody.innerHTML = '<tr><td colspan="4"><div class="empty-state"><i class="fas fa-receipt"></i>No transactions yet</div></td></tr>';
+                    return;
+                }
+                tbody.innerHTML = filtered.map(tx=>`
+                    <tr>
+                        <td>${new Date(tx.transaction_date).toLocaleString()}</td>
+                        <td><span class="${tx.transaction_type==='buy'?'badge-buy':'badge-sell'}">
+                            <i class="fas fa-arrow-${tx.transaction_type==='buy'?'up':'down'}"></i>
+                            ${tx.transaction_type.charAt(0).toUpperCase()+tx.transaction_type.slice(1)}
+                        </span></td>
+                        <td>${tx.quantity}</td>
+                        <td>$${parseFloat(tx.price_per_share).toFixed(2)}</td>
+                    </tr>`).join('');
+            }
+        } catch(e) { console.error("History error:",e); }
+    }
+
+    async function saveTransaction(type, amount, price) {
+        try {
+            const res = await fetch("meta_transaction.php", {
+                method:"POST",
+                headers:{"Content-Type":"application/json"},
+                body:JSON.stringify({
+                    transaction_type:type, quantity:amount,
+                    price_per_share:price, stock_symbol:"META",
+                    stock_name:"Meta Platforms", csrf_token:csrfToken
+                })
+            });
+            const data = await res.json();
+            if(data.success) {
+                balance = parseFloat(data.new_balance);
+                ownedStocks = type==='buy' ? ownedStocks+parseInt(amount) : ownedStocks-parseInt(amount);
+                document.getElementById("balance").innerText = balance.toFixed(2);
+                document.getElementById("ownedStocks").innerText = ownedStocks;
+                await loadTransactionHistory();
+            } else { alert(data.message); }
+        } catch(e) { console.error("Transaction error:",e); alert("Error processing transaction"); }
+    }
+
+    function buyStock() {
+        const amount = parseInt(document.getElementById("amount").value);
+        if(isNaN(amount)||amount<=0){alert("Please enter a valid quantity.");return;}
+        saveTransaction("buy", amount, stockPrices[stockPrices.length-1]);
+    }
+
+    function sellStock() {
+        const amount = parseInt(document.getElementById("amount").value);
+        if(isNaN(amount)||amount<=0){alert("Please enter a valid quantity.");return;}
+        saveTransaction("sell", amount, stockPrices[stockPrices.length-1]);
+    }
+
+    initialize();
+    setInterval(updateStockPrice, 1000);
+</script>
+</body>
+</html>

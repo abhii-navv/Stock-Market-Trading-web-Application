@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Feedback | Nova Capital</title>
+    <link rel="icon" type="image/png" href="Bull-removebg-preview.png">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --green-deep:#003d30; --green-mid:#00694f; --green-bright:#00c896;
+            --gold:#c9a84c; --off-white:#f4f1eb; --cream:#faf8f3;
+            --text-dark:#1a1a1a; --text-muted:#6b7280;
+            --white:#ffffff; --positive:#22c55e; --negative:#ef4444;
+        }
+        *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+        body{font-family:'DM Sans',sans-serif;background:var(--off-white);color:var(--text-dark);min-height:100vh;}
+
+        /* HEADER */
+        header{background:var(--green-deep);position:sticky;top:0;z-index:200;border-bottom:1px solid rgba(255,255,255,0.05);}
+        .hdr{max-width:1280px;margin:0 auto;padding:0 40px;height:68px;display:flex;justify-content:space-between;align-items:center;}
+        .logo-link{font-family:'Playfair Display',serif;font-size:19px;font-weight:700;color:var(--white);display:flex;align-items:center;gap:10px;text-decoration:none;}
+        .logo-link i{color:var(--gold);font-size:16px;}
+        .nav{display:flex;align-items:center;gap:2px;}
+        .nav a{text-decoration:none;color:rgba(255,255,255,0.52);font-size:13.5px;font-weight:500;padding:8px 15px;border-radius:9px;transition:all 0.2s;}
+        .nav a:hover{background:rgba(255,255,255,0.07);color:var(--white);}
+        .nav a.active{background:rgba(0,200,150,0.13);color:var(--green-bright);}
+
+        /* HERO */
+        .hero{background:var(--green-deep);padding:44px 40px 36px;position:relative;overflow:hidden;}
+        .hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 78% 50%,rgba(0,200,150,0.08),transparent 60%);pointer-events:none;}
+        .hero-in{max-width:1280px;margin:0 auto;display:flex;justify-content:space-between;align-items:center;position:relative;z-index:1;}
+        .eyebrow{font-size:10px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--green-bright);margin-bottom:9px;}
+        .hero-title{font-family:'Playfair Display',serif;font-size:28px;font-weight:700;color:var(--white);}
+        .hero-sub{font-size:13.5px;color:rgba(255,255,255,0.38);margin-top:6px;font-weight:300;}
+        .back-btn{display:inline-flex;align-items:center;gap:8px;background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.1);color:rgba(255,255,255,0.65);padding:10px 20px;border-radius:10px;font-size:13px;font-weight:500;text-decoration:none;transition:all 0.2s;white-space:nowrap;}
+        .back-btn:hover{background:rgba(255,255,255,0.13);color:var(--white);}
+
+        /* MAIN */
+        .wrap{max-width:880px;margin:0 auto;padding:40px 40px 80px;}
+
+        /* Form card */
+        .card{background:var(--white);border:1px solid rgba(0,0,0,0.06);border-radius:20px;overflow:hidden;box-shadow:0 2px 12px rgba(0,61,48,0.05);margin-bottom:28px;}
+        .card-hd{padding:24px 32px;border-bottom:1px solid var(--off-white);display:flex;align-items:center;gap:12px;}
+        .card-icon{width:40px;height:40px;border-radius:12px;background:rgba(0,105,79,0.09);display:flex;align-items:center;justify-content:center;color:var(--green-mid);font-size:16px;}
+        .card-title{font-family:'Playfair Display',serif;font-size:18px;font-weight:700;}
+        .card-body{padding:32px;}
+
+        /* Form fields */
+        .form-row{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:20px;}
+        .form-row.single{grid-template-columns:1fr;}
+        .form-group{display:flex;flex-direction:column;gap:7px;}
+        label{font-size:13px;font-weight:600;color:var(--text-dark);}
+        label span.req{color:var(--negative);margin-left:2px;}
+        input[type=text], input[type=email], textarea, select {
+            width:100%; padding:12px 16px;
+            border:1.5px solid rgba(0,0,0,0.1); border-radius:11px;
+            font-family:'DM Sans',sans-serif; font-size:14px; color:var(--text-dark);
+            background:var(--white); transition:border-color 0.2s,box-shadow 0.2s;
+            outline:none; resize:vertical;
+        }
+        input:focus, textarea:focus, select:focus {
+            border-color:var(--green-mid);
+            box-shadow:0 0 0 3px rgba(0,105,79,0.1);
+        }
+        input::placeholder, textarea::placeholder{color:var(--text-muted);}
+        select{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%236b7280' d='M1 1l5 5 5-5'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center;padding-right:40px;cursor:pointer;}
+        textarea{min-height:120px;}
+        .err{font-size:12px;color:var(--negative);display:none;align-items:center;gap:4px;}
+        .err.show{display:flex;}
+
+        /* Stars */
+        .stars-wrap{display:flex;flex-direction:row-reverse;justify-content:flex-start;gap:4px;}
+        .stars-wrap input{display:none;}
+        .stars-wrap label{font-size:30px;color:#d1d5db;cursor:pointer;transition:color 0.15s;padding:0;font-weight:400;line-height:1;}
+        .stars-wrap input:checked ~ label,
+        .stars-wrap label:hover,
+        .stars-wrap label:hover ~ label{color:var(--gold);}
+
+        /* Submit button */
+        .submit-btn{display:inline-flex;align-items:center;gap:9px;background:var(--green-deep);color:var(--white);padding:13px 28px;border:none;border-radius:11px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;cursor:pointer;transition:all 0.2s;margin-top:8px;}
+        .submit-btn:hover{background:var(--green-mid);transform:translateY(-1px);box-shadow:0 6px 20px rgba(0,61,48,0.2);}
+        .submit-btn i{font-size:13px;}
+
+        /* Reviews */
+        .reviews-list{display:flex;flex-direction:column;gap:14px;}
+        .review-card{background:var(--white);border:1px solid rgba(0,0,0,0.06);border-radius:16px;padding:20px 24px;position:relative;overflow:hidden;}
+        .review-card::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--green-mid);border-radius:3px 0 0 3px;}
+        .rv-head{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px;}
+        .rv-name{font-weight:700;font-size:14px;}
+        .rv-meta{font-size:12px;color:var(--text-muted);margin-top:2px;}
+        .rv-stars{font-size:16px;color:var(--gold);letter-spacing:1px;}
+        .rv-cat{display:inline-flex;align-items:center;padding:3px 9px;border-radius:20px;font-size:11px;font-weight:600;background:rgba(0,105,79,0.08);color:var(--green-mid);margin-bottom:8px;}
+        .rv-title{font-family:'Playfair Display',serif;font-size:15px;font-weight:700;margin-bottom:6px;}
+        .rv-comment{font-size:13.5px;color:var(--text-muted);line-height:1.65;}
+        .empty-state{text-align:center;padding:40px 20px;color:var(--text-muted);}
+        .empty-state i{font-size:32px;color:rgba(0,105,79,0.15);margin-bottom:12px;display:block;}
+
+        /* Toast */
+        .toast{position:fixed;bottom:28px;right:28px;background:var(--green-deep);color:var(--white);padding:14px 22px;border-radius:12px;font-size:14px;font-weight:500;display:flex;align-items:center;gap:10px;box-shadow:0 8px 28px rgba(0,61,48,0.3);transform:translateY(100px);opacity:0;transition:all 0.35s cubic-bezier(.34,1.56,.64,1);z-index:999;}
+        .toast.show{transform:translateY(0);opacity:1;}
+        .toast i{color:var(--green-bright);}
+
+        /* FOOTER */
+        footer{background:var(--green-deep);padding:50px 40px 28px;position:relative;overflow:hidden;}
+        footer::before{content:'';position:absolute;bottom:-140px;right:-60px;width:380px;height:380px;border-radius:50%;background:radial-gradient(circle,rgba(0,200,150,0.06),transparent);pointer-events:none;}
+        .fgrid{max-width:1280px;margin:0 auto;display:grid;grid-template-columns:2fr 1fr 1fr;gap:60px;margin-bottom:40px;position:relative;z-index:1;}
+        .fbrand{font-family:'Playfair Display',serif;font-size:19px;font-weight:700;color:var(--white);display:flex;align-items:center;gap:10px;margin-bottom:12px;}
+        .fbrand i{color:var(--gold);}
+        .fdesc{font-size:13px;color:rgba(255,255,255,0.32);line-height:1.85;max-width:260px;}
+        .fch{font-size:10px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:rgba(255,255,255,0.28);margin-bottom:16px;}
+        .fl{list-style:none;}
+        .fl li{margin-bottom:10px;}
+        .fl a{font-size:13px;color:rgba(255,255,255,0.45);text-decoration:none;transition:color 0.2s;}
+        .fl a:hover{color:var(--white);}
+        .fbot{max-width:1280px;margin:0 auto;position:relative;z-index:1;border-top:1px solid rgba(255,255,255,0.07);padding-top:24px;text-align:center;font-size:12px;color:rgba(255,255,255,0.22);}
+
+        @media(max-width:768px){
+            .hdr,.hero,.wrap,footer{padding-left:20px;padding-right:20px;}
+            .hero-in{flex-direction:column;align-items:flex-start;gap:18px;}
+            .form-row{grid-template-columns:1fr;}
+            .fgrid{grid-template-columns:1fr;gap:28px;}
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="hdr">
+        <a href="dash1.php" class="logo-link"><i class="fas fa-chart-line"></i> NOVA CAPITAL</a>
+        <nav class="nav">
+            <a href="dash1.php">Dashboard</a>
+            <a href="main.html">Buy/Sell</a>
+            <a href="stock-history.php">History</a>
+            <a href="dashboard.html">News</a>
+            <a href="Average.html">Averages</a>
+        </nav>
+    </div>
+</header>
+
+<div class="hero">
+    <div class="hero-in">
+        <div>
+            <div class="eyebrow">Customer Experience</div>
+            <div class="hero-title">Share Your Feedback</div>
+            <div class="hero-sub">Help us improve Nova Capital with your thoughts and ratings</div>
+        </div>
+        <a href="dash1.php" class="back-btn"><i class="fas fa-arrow-left"></i> Back to Dashboard</a>
+    </div>
+</div>
+
+<main class="wrap">
+
+    <!-- Feedback Form -->
+    <div class="card">
+        <div class="card-hd">
+            <div class="card-icon"><i class="fas fa-pen-to-square"></i></div>
+            <div class="card-title">Feedback Form</div>
+        </div>
+        <div class="card-body">
+            <form id="feedbackForm" novalidate>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="name">Full Name <span class="req">*</span></label>
+                        <input type="text" id="name" placeholder="Your full name">
+                        <span class="err" id="nameErr"><i class="fas fa-circle-exclamation"></i> Please enter your name</span>
+                    </div>
+                    <div class="form-group">
+                        <label for="email">Email Address <span class="req">*</span></label>
+                        <input type="email" id="email" placeholder="you@example.com">
+                        <span class="err" id="emailErr"><i class="fas fa-circle-exclamation"></i> Please enter a valid email</span>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="category">Feedback Category</label>
+                        <select id="category">
+                            <option value="">Select a category</option>
+                            <option value="Product">Product</option>
+                            <option value="Customer Service">Customer Service</option>
+                            <option value="Website">Website</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Your Rating <span class="req">*</span></label>
+                        <div class="stars-wrap">
+                            <input type="radio" id="s5" name="rating" value="5"><label for="s5" title="5 stars">★</label>
+                            <input type="radio" id="s4" name="rating" value="4"><label for="s4" title="4 stars">★</label>
+                            <input type="radio" id="s3" name="rating" value="3"><label for="s3" title="3 stars">★</label>
+                            <input type="radio" id="s2" name="rating" value="2"><label for="s2" title="2 stars">★</label>
+                            <input type="radio" id="s1" name="rating" value="1"><label for="s1" title="1 star">★</label>
+                        </div>
+                        <span class="err" id="ratingErr"><i class="fas fa-circle-exclamation"></i> Please select a rating</span>
+                    </div>
+                </div>
+                <div class="form-row single">
+                    <div class="form-group">
+                        <label for="title">Feedback Title <span class="req">*</span></label>
+                        <input type="text" id="title" placeholder="Brief summary of your feedback">
+                        <span class="err" id="titleErr"><i class="fas fa-circle-exclamation"></i> Please enter a title</span>
+                    </div>
+                </div>
+                <div class="form-row single">
+                    <div class="form-group">
+                        <label for="comment">Detailed Feedback <span class="req">*</span></label>
+                        <textarea id="comment" placeholder="Share your experience with Nova Capital..."></textarea>
+                        <span class="err" id="commentErr"><i class="fas fa-circle-exclamation"></i> Please provide your feedback</span>
+                    </div>
+                </div>
+                <button type="submit" class="submit-btn"><i class="fas fa-paper-plane"></i> Submit Feedback</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Previous Reviews -->
+    <div class="card">
+        <div class="card-hd">
+            <div class="card-icon"><i class="fas fa-comments"></i></div>
+            <div class="card-title">Previous Feedback</div>
+        </div>
+        <div class="card-body" style="padding:24px 32px;">
+            <div id="reviewList" class="reviews-list">
+                <div class="empty-state"><i class="fas fa-comment-slash"></i>No feedback yet. Be the first to share!</div>
+            </div>
+        </div>
+    </div>
+
+</main>
+
+<footer>
+    <div class="fgrid">
+        <div>
+            <div class="fbrand"><i class="fas fa-chart-line"></i> NOVA CAPITAL</div>
+            <p class="fdesc">Your trusted partner for stock market investments and portfolio management.</p>
+        </div>
+        <div>
+            <div class="fch">Navigate</div>
+            <ul class="fl">
+                <li><a href="dash1.php">Dashboard</a></li>
+                <li><a href="main.html">Buy / Sell</a></li>
+                <li><a href="stock-history.php">Transaction History</a></li>
+                <li><a href="Average.html">Market Averages</a></li>
+            </ul>
+        </div>
+        <div>
+            <div class="fch">Support</div>
+            <ul class="fl">
+                <li><a href="Feedback.html">Feedback</a></li>
+                <li><a href="#">Help Center</a></li>
+                <li><a href="#">Terms of Service</a></li>
+            </ul>
+        </div>
+    </div>
+    <div class="fbot">© 2025 Nova Capital. All rights reserved.</div>
+</footer>
+
+<!-- Toast -->
+<div class="toast" id="toast"><i class="fas fa-circle-check"></i> Thank you for your feedback!</div>
+
+<script>
+    let reviews = JSON.parse(localStorage.getItem('nc_reviews')) || [];
+
+    function showToast(msg) {
+        const t = document.getElementById('toast');
+        t.querySelector('span') && (t.querySelector('span').textContent = msg);
+        t.classList.add('show');
+        setTimeout(() => t.classList.remove('show'), 3500);
+    }
+
+    document.getElementById('feedbackForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        let valid = true;
+
+        // Reset errors
+        document.querySelectorAll('.err').forEach(el => el.classList.remove('show'));
+
+        const name    = document.getElementById('name').value.trim();
+        const email   = document.getElementById('email').value.trim();
+        const cat     = document.getElementById('category').value;
+        const rating  = document.querySelector('input[name="rating"]:checked');
+        const title   = document.getElementById('title').value.trim();
+        const comment = document.getElementById('comment').value.trim();
+
+        if (!name)   { document.getElementById('nameErr').classList.add('show');    valid=false; }
+        if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+            document.getElementById('emailErr').classList.add('show'); valid=false;
+        }
+        if (!rating) { document.getElementById('ratingErr').classList.add('show');  valid=false; }
+        if (!title)  { document.getElementById('titleErr').classList.add('show');   valid=false; }
+        if (!comment){ document.getElementById('commentErr').classList.add('show'); valid=false; }
+
+        if (!valid) return;
+
+        reviews.unshift({
+            name, email,
+            category: cat || 'General',
+            rating: parseInt(rating.value),
+            title, comment,
+            date: new Date().toISOString()
+        });
+        localStorage.setItem('nc_reviews', JSON.stringify(reviews));
+
+        this.reset();
+        renderReviews();
+        showToast('Thank you for your feedback!');
+    });
+
+    function renderReviews() {
+        const list = document.getElementById('reviewList');
+        if (!reviews.length) {
+            list.innerHTML = '<div class="empty-state"><i class="fas fa-comment-slash"></i>No feedback yet. Be the first to share!</div>';
+            return;
+        }
+        list.innerHTML = reviews.map(r => `
+            <div class="review-card">
+                <div class="rv-head">
+                    <div>
+                        <div class="rv-name">${escHtml(r.name)}</div>
+                        <div class="rv-meta">${new Date(r.date).toLocaleDateString('en-US',{year:'numeric',month:'short',day:'numeric'})}</div>
+                    </div>
+                    <div class="rv-stars">${'★'.repeat(r.rating)}${'☆'.repeat(5-r.rating)}</div>
+                </div>
+                <span class="rv-cat">${escHtml(r.category)}</span>
+                <div class="rv-title">${escHtml(r.title)}</div>
+                <div class="rv-comment">${escHtml(r.comment)}</div>
+            </div>
+        `).join('');
+    }
+
+    function escHtml(s) {
+        return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    }
+
+    renderReviews();
+</script>
+</body>
+</html>
