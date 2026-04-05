@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Average Stock Prices | Nova Capital</title>
+    <link rel="icon" type="image/png" href="Bull-removebg-preview.png">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            background-color: #f5f7f8;
+            min-height: 100vh;
+            padding-top: 70px;
+        }
+
+        /* Navigation Bar Styles */
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 40px;
+            background-color: white;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+        }
+
+        .navbar-brand {
+            display: flex;
+            align-items: center;
+            color: #00a389;
+            font-size: 24px;
+            font-weight: bold;
+            text-decoration: none;
+        }
+
+        .navbar-brand img {
+            height: 32px;
+            margin-right: 10px;
+        }
+
+        .navbar-menu {
+            display: flex;
+            gap: 30px;
+            align-items: center;
+        }
+
+        .navbar-menu a {
+            color: #333;
+            text-decoration: none;
+            font-size: 16px;
+            padding: 5px 0;
+            position: relative;
+            transition: color 0.3s;
+        }
+
+        .navbar-menu a:hover {
+            color: #00a389;
+        }
+
+        .navbar-menu a.active {
+            color: #00a389;
+        }
+
+        .navbar-menu a.active::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background-color: #00a389;
+        }
+
+        /* Main Content Styles */
+        .main-content {
+            max-width: 1100px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+
+        .content-container {
+            background-color: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            padding: 40px;
+        }
+
+        .page-header {
+            margin-bottom: 30px;
+        }
+
+        .page-header h1 {
+            color: #00574d;
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+
+        .page-header p {
+            color: #666;
+            font-size: 16px;
+        }
+
+        /* Time Filter Styles */
+        .controls-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .time-filter select {
+            padding: 10px 15px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            background-color: white;
+            color: #333;
+            font-size: 14px;
+            min-width: 150px;
+            cursor: pointer;
+            transition: border-color 0.3s;
+        }
+
+        .time-filter select:hover,
+        .time-filter select:focus {
+            border-color: #00a389;
+            outline: none;
+        }
+
+        .back-button {
+            display: inline-flex;
+            align-items: center;
+            background-color: #00a389;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            text-decoration: none;
+            font-size: 14px;
+            transition: background-color 0.3s;
+        }
+
+        .back-button svg {
+            margin-right: 6px;
+            width: 16px;
+            height: 16px;
+        }
+
+        .back-button:hover {
+            background-color: #00574d;
+        }
+
+        /* Stock Table Styles */
+        .stock-table-container {
+            overflow-x: auto;
+            border-radius: 8px;
+            border: 1px solid #eee;
+        }
+
+        .stock-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .stock-table th {
+            background-color: #f8f9fa;
+            color: #333;
+            text-align: left;
+            padding: 15px;
+            font-weight: 600;
+            border-bottom: 2px solid #eee;
+        }
+
+        .stock-table td {
+            padding: 15px;
+            border-bottom: 1px solid #eee;
+            vertical-align: middle;
+        }
+
+        .stock-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .stock-table tr:hover {
+            background-color: #f9f9f9;
+        }
+
+        .company-logo {
+            width: 32px;
+            height: 32px;
+            margin-right: 12px;
+            vertical-align: middle;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .company-name {
+            display: flex;
+            align-items: center;
+            font-weight: 500;
+        }
+
+        .price-value {
+            font-weight: 600;
+        }
+
+        .positive {
+            color: #00a389;
+            font-weight: 600;
+        }
+
+        .negative {
+            color: #e74c3c;
+            font-weight: 600;
+        }
+
+        /* Modal/Popup Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: 15% auto;
+            padding: 30px;
+            border-radius: 8px;
+            width: 350px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            text-align: center;
+        }
+
+        .modal-text {
+            margin-bottom: 25px;
+            font-size: 18px;
+            color: #333;
+        }
+
+        .modal-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+        }
+
+        .modal-button {
+            padding: 10px 25px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 15px;
+            transition: background-color 0.3s;
+        }
+
+        .confirm-button {
+            background-color: #e74c3c;
+            color: white;
+        }
+
+        .confirm-button:hover {
+            background-color: #c0392b;
+        }
+
+        .cancel-button {
+            background-color: #95a5a6;
+            color: white;
+        }
+
+        .cancel-button:hover {
+            background-color: #7f8c8d;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .navbar {
+                padding: 15px 20px;
+            }
+            
+            .navbar-menu {
+                gap: 15px;
+            }
+            
+            .content-container {
+                padding: 25px;
+            }
+            
+            .controls-row {
+                flex-direction: column-reverse;
+                align-items: flex-start;
+                gap: 15px;
+            }
+            
+            .time-filter {
+                width: 100%;
+            }
+            
+            .time-filter select {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation Bar (Fixed at top) -->
+    <nav class="navbar">
+        <a href="index.html" class="navbar-brand">
+            <img src="Bull-removebg-preview.png" alt="Nova Capital Logo">
+            NOVA CAPITAL
+        </a>
+        <div class="navbar-menu">
+            
+            <a href="dash1.php">Dashboard</a>
+            <a href="main.html">Buy/Sell</a>
+            <a href="stock-history.php">History</a>
+            <a href="dashboard.html">News</a>
+      
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="content-container">
+            <div class="page-header">
+                <h1>Average Stock Prices</h1>
+                <p>Current average prices for major tech companies</p>
+            </div>
+
+
+                <a href="dash1.php" class="back-button">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M19 12H5M12 19l-7-7 7-7"/>
+                    </svg>
+                    Back to Dashboard
+                </a>
+            </div>
+
+            <div class="stock-table-container">
+                <table class="stock-table">
+                    <thead>
+                        <tr>
+                            <th>Company</th>
+                            <th>Average Price</th>
+                            <th>Change ($)</th>
+                            <th>Change (%)</th>
+                            <th>52-Week High</th>
+                            <th>52-Week Low</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="company-name">
+                                <img src="amazon.png" alt="Amazon" class="company-logo"> Amazon
+                            </td>
+                            <td class="price-value">$178.75</td>
+                            <td class="positive">+2.45</td>
+                            <td class="positive">+1.39%</td>
+                            <td>$185.30</td>
+                            <td>$101.15</td>
+                        </tr>
+                        <tr>
+                            <td class="company-name">
+                                <img src="google.png" alt="Google" class="company-logo"> Google
+                            </td>
+                            <td class="price-value">$156.42</td>
+                            <td class="negative">-1.58</td>
+                            <td class="negative">-1.02%</td>
+                            <td>$160.25</td>
+                            <td>$120.78</td>
+                        </tr>
+                        <tr>
+                            <td class="company-name">
+                                <img src="meta.png" alt="Meta" class="company-logo"> Meta
+                            </td>
+                            <td class="price-value">$475.30</td>
+                            <td class="positive">+5.20</td>
+                            <td class="positive">+1.10%</td>
+                            <td>$498.76</td>
+                            <td>$240.15</td>
+                        </tr>
+                        <tr>
+                            <td class="company-name">
+                                <img src="microsoft.png" alt="Microsoft" class="company-logo"> Microsoft
+                            </td>
+                            <td class="price-value">$412.28</td>
+                            <td class="positive">+3.45</td>
+                            <td class="positive">+0.84%</td>
+                            <td>$425.50</td>
+                            <td>$310.25</td>
+                        </tr>
+                        <tr>
+                            <td class="company-name">
+                                <img src="apple.png" alt="Apple" class="company-logo"> Apple
+                            </td>
+                            <td class="price-value">$172.63</td>
+                            <td class="negative">-4.87</td>
+                            <td class="negative">-2.82%</td>
+                            <td>$268.95</td>
+                            <td>$138.80</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Logout Confirmation Modal -->
+    <div id="logoutModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-text">Are you sure you want to logout?</div>
+            <div class="modal-buttons">
+                <button class="modal-button confirm-button" onclick="logout()">Yes</button>
+                <button class="modal-button cancel-button" onclick="closeModal()">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function updateStockData() {
+            const timePeriod = document.getElementById('time-period').value;
+            // In a real application, you would fetch new data based on the selected time period
+            // For this example, we'll just show an alert
+            alert(`Data would be updated for time period: ${timePeriod}`);
+        }
+
+        function showLogoutConfirmation() {
+            document.getElementById('logoutModal').style.display = 'block';
+        }
+
+        function closeModal() {
+            document.getElementById('logoutModal').style.display = 'none';
+        }
+
+        function logout() {
+            // Clear any session storage or cookies if needed
+            window.location.href = 'signin.html';
+        }
+
+        // Close the modal if user clicks outside of it
+        window.onclick = function(event) {
+            const modal = document.getElementById('logoutModal');
+            if (event.target == modal) {
+                closeModal();
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Sign Up | Nova Capital</title>
+        <link rel="icon" type="image/png" href="Bull-removebg-preview.png">
+        <style>
+            * {
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+                font-family: Arial, sans-serif;
+            }
+            
+            body {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                height: 100vh;
+                background-color: #f5f7f8;
+            }
+            
+            .container {
+                display: flex;
+                width: 800px;
+                height: 450px;
+                background: white;
+                border-radius: 12px;
+                overflow: hidden;
+                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            }
+            
+            .left-panel {
+                width: 40%;
+                background: linear-gradient(135deg, #00a389, #00574d);
+                color: white;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+                padding: 20px;
+            }
+            
+            .left-panel h1 {
+                font-size: 28px;
+                margin-bottom: 10px;
+                text-align: center;
+            }
+            
+            .left-panel p {
+                font-size: 14px;
+                text-align: center;
+                opacity: 0.9;
+            }
+            
+            .right-panel {
+                width: 60%;
+                background: white;
+                padding: 40px;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+            }
+            
+            .right-panel h2 {
+                color: #00574d;
+                font-size: 22px;
+                margin-bottom: 20px;
+            }
+            
+            .input-field {
+                width: 100%;
+                margin-bottom: 15px;
+            }
+            
+            .input-field input {
+                width: 100%;
+                padding: 10px;
+                border: 1px solid #ccc;
+                border-radius: 5px;
+                font-size: 14px;
+                background: #f5f7f8;
+                color: #333;
+                outline: none;
+            }
+    
+            .checkbox {
+                display: flex;
+                align-items: center;
+                margin-bottom: 15px;
+            }
+    
+            .checkbox input {
+                margin-right: 8px;
+            }
+    
+            .checkbox label {
+                color: #666;
+                font-size: 12px;
+            }
+    
+            .btn-signup {
+                width: 100%;
+                padding: 12px;
+                border: none;
+                font-size: 14px;
+                cursor: pointer;
+                border-radius: 5px;
+                color: white;
+                background: #00a389;
+                margin-bottom: 15px;
+            }
+    
+            .btn-signup:hover {
+                opacity: 0.8;
+            }
+    
+            .signin-link {
+                text-align: center;
+                font-size: 13px;
+                color: #666;
+            }
+    
+            .signin-link a {
+                color: #00a389;
+                text-decoration: none;
+                font-weight: bold;
+            }
+    
+            .signin-link a:hover {
+                text-decoration: underline;
+            }
+    
+            .password-message {
+                color: red;
+                font-size: 12px;
+                margin-top: 5px;
+                white-space: pre-line;
+            }
+    
+            .error-message {
+                color: #e74c3c;
+                font-size: 14px;
+                margin-bottom: 15px;
+                padding: 8px;
+                background-color: #fadbd8;
+                border-radius: 4px;
+                display: none;
+            }
+        </style>
+    </head>
+<body>
+    <div class="container">
+        <div class="left-panel">
+            <h1>Welcome to Nova Capital</h1>
+            <img src="Qd6QO301.svg" alt="Stock Exchange Illustration">
+        </div>
+
+        <div class="right-panel">
+            <h2>Create your account</h2>
+            
+            <div class="error-message" id="errorMessage">
+                <?php if (isset($_GET['password_error'])): ?>
+                    Password must include: at least one lowercase letter, one uppercase letter, one number, one special character, and be at least 8 characters long
+                <?php endif; ?>
+            </div>
+
+            <form action="registration.php" method="POST" id="signupForm">
+                <div class="input-field">
+                    <input type="text" name="name" placeholder="Enter your name" required>
+                </div>
+
+                <div class="input-field">
+                    <input type="email" name="email" placeholder="Enter your email" required>
+                </div>
+
+                <div class="input-field">
+                    <input type="password" name="password" id="password" placeholder="Enter your password" required>
+                    <div class="password-message"></div>
+                </div>
+
+                <div class="checkbox">
+                    <input type="checkbox" id="agree" name="agree" required>
+                    <label for="agree">By signing up, I agree to the Terms & Conditions</label>
+                </div>
+
+                <button type="submit" class="btn-signup">Sign Up</button>
+            </form>
+            
+            <div class="signin-link">
+                Already have an account? <a href="signin.php">Sign in</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('signupForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const name = document.querySelector('input[name="name"]').value.trim();
+            const email = document.querySelector('input[name="email"]').value.trim();
+            const password = document.querySelector('input[name="password"]').value;
+            const agree = document.querySelector('#agree').checked;
+            const passwordMessage = document.querySelector('.password-message');
+            const errorMessage = document.getElementById('errorMessage');
+            
+            // Reset error messages
+            passwordMessage.textContent = '';
+            errorMessage.style.display = 'none';
+            
+            // Validate form
+            if (!name || !email || !password || !agree) {
+                errorMessage.textContent = 'Please fill in all fields and agree to the terms.';
+                errorMessage.style.display = 'block';
+                return;
+            }
+            
+            // Validate email format
+            const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailPattern.test(email)) {
+                errorMessage.textContent = 'Please enter a valid email address.';
+                errorMessage.style.display = 'block';
+                return;
+            }
+
+            // Fixed password validation
+            const passwordCriteria = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+            if (!passwordCriteria.test(password)) {
+                let message = 'Password must include:';
+                if (!/(?=.*[a-z])/.test(password)) message += '\n- At least one lowercase letter';
+                if (!/(?=.*[A-Z])/.test(password)) message += '\n- At least one uppercase letter';
+                if (!/(?=.*\d)/.test(password)) message += '\n- At least one number';
+                if (!/(?=.*[@$!%*?&])/.test(password)) message += '\n- At least one special character';
+                if (password.length < 8) message += '\n- At least 8 characters long';
+                passwordMessage.textContent = message;
+                return;
+            }
+
+            this.submit();
+        });
+    </script>
+</body>
+</html>

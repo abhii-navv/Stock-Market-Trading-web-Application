@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nova Capital - Stock Portfolio</title>
+    <style>
+        :root {
+            --primary: #00997b;
+            --primary-dark: #008870;
+            --background: #f5f7f8;
+            --text: #333333;
+            --light: #ffffff;
+            --gray: #e2e8f0;
+            --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: var(--background);
+            color: var(--text);
+            line-height: 1.6;
+        }
+        
+        .header {
+            background-color: var(--light);
+            color: var(--text);
+            padding: 1rem 0;
+            width: 100%;
+            border-bottom: 1px solid var(--gray);
+            box-shadow: var(--shadow);
+        }
+        
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: bold;
+            font-size: 1.5rem;
+            color: var(--primary);
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+        }
+        
+        .nav-links a {
+            text-decoration: none;
+            color: var(--text);
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+        
+        .nav-links a:hover {
+            color: var(--primary);
+        }
+        
+        .ticker-container {
+            background: var(--primary);
+            width: 100%;
+            overflow: hidden;
+            padding: 0.5rem 0;
+            color: white;
+        }
+        
+        .ticker {
+            white-space: nowrap;
+            display: inline-block;
+            animation: ticker 50s linear infinite;
+            padding-left: 100%;
+        }
+        
+        .ticker-item {
+            display: inline-block;
+            padding: 0 2rem;
+        }
+        
+        .ticker-symbol {
+            font-weight: bold;
+        }
+        
+        .ticker-price {
+            margin-left: 0.5rem;
+        }
+        
+        .ticker-up {
+            color: #22c55e;
+        }
+        
+        .ticker-down {
+            color: #ef4444;
+        }
+        
+        @keyframes ticker {
+            0% {
+                transform: translateX(0);
+            }
+            100% {
+                transform: translateX(-100%);
+            }
+        }
+        
+        .main {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+        }
+        
+        .market-summary {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+        
+        .market-card {
+            background: var(--light);
+            border-radius: 0.5rem;
+            padding: 1.5rem;
+            box-shadow: var(--shadow);
+        }
+        
+        .market-card h3 {
+            font-size: 1rem;
+            color: #666;
+            margin-bottom: 1rem;
+        }
+        
+        .market-card .value {
+            font-size: 1.8rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+        
+        .market-card .change {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: 500;
+        }
+        
+        .positive {
+            color: #22c55e;
+        }
+        
+        .negative {
+            color: #ef4444;
+        }
+        
+        .stock-section {
+            margin-top: 2rem;
+        }
+        
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+        
+        .section-title {
+            font-size: 1.4rem;
+            color: var(--text);
+            font-weight: 600;
+        }
+        
+        .stock-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+        
+        .stock-card {
+            background: var(--light);
+            border-radius: 0.5rem;
+            padding: 1.5rem;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            border: 1px solid var(--gray);
+            box-shadow: var(--shadow);
+        }
+        
+        .stock-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--primary);
+        }
+        
+        .stock-logo {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            object-fit: cover;
+            background: white;
+            padding: 0.2rem;
+            border: 1px solid var(--gray);
+        }
+        
+        .stock-info {
+            flex: 1;
+        }
+        
+        .stock-name {
+            font-weight: 600;
+            color: var(--text);
+            font-size: 1.1rem;
+            margin-bottom: 0.3rem;
+        }
+        
+        .stock-ticker {
+            color: #666;
+            font-size: 0.9rem;
+        }
+        
+        .stock-price {
+            text-align: right;
+        }
+        
+        .current-price {
+            font-weight: 600;
+            font-size: 1.1rem;
+            margin-bottom: 0.3rem;
+        }
+        
+        .filter-section {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .filter-dropdown {
+            position: relative;
+        }
+        
+        select {
+            padding: 0.8rem 1rem;
+            border-radius: 0.5rem;
+            border: 1px solid var(--gray);
+            background-color: white;
+            font-size: 1rem;
+            color: var(--text);
+            appearance: none;
+            cursor: pointer;
+            min-width: 200px;
+        }
+        
+        .select-arrow {
+            position: absolute;
+            right: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            pointer-events: none;
+        }
+        
+        .action-button {
+            background-color: var(--primary);
+            color: white;
+            padding: 0.8rem 1.5rem;
+            border: none;
+            border-radius: 0.5rem;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .action-button:hover {
+            background-color: var(--primary-dark);
+        }
+        
+        footer {
+            background-color: var(--light);
+            color: var(--text);
+            padding: 2rem 0;
+            margin-top: 3rem;
+            border-top: 1px solid var(--gray);
+        }
+        
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            justify-content: space-between;
+        }
+        
+        .footer-left {
+            max-width: 400px;
+        }
+        
+        .footer-logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--primary);
+            margin-bottom: 1rem;
+        }
+        
+        .footer-right {
+            display: flex;
+            gap: 3rem;
+        }
+        
+        .footer-column h3 {
+            font-size: 1.2rem;
+            margin-bottom: 1rem;
+            color: var(--text);
+        }
+        
+        .footer-links {
+            list-style: none;
+        }
+        
+        .footer-links li {
+            margin-bottom: 0.5rem;
+        }
+        
+        .footer-links a {
+            color: #666;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+        
+        .footer-links a:hover {
+            color: var(--primary);
+        }
+        
+        .footer-bottom {
+            text-align: center;
+            padding-top: 2rem;
+            margin-top: 2rem;
+            border-top: 1px solid var(--gray);
+            font-size: 0.9rem;
+            color: #999;
+            max-width: 1200px;
+            margin: 2rem auto 0;
+            padding: 2rem 2rem 0;
+        }
+        
+        @media (max-width: 768px) {
+            .stock-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .filter-section {
+                flex-direction: column;
+            }
+            
+            .footer-content {
+                flex-direction: column;
+                gap: 2rem;
+            }
+            
+            .footer-right {
+                flex-direction: column;
+                gap: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="header-content">
+            <div class="logo">
+                NOVA CAPITAL
+            </div>
+            <div class="nav-links">
+                
+                <a href="dash1.php">Dashboard</a>
+                <a href="dashboard.html">News</a>
+                <a href="Average.html">Average</a>
+            </div>
+        </div>
+    </header>
+
+    <div class="ticker-container">
+        <div class="ticker">
+            <div class="ticker-item">
+                <span class="ticker-symbol">AAPL</span>
+                <span class="ticker-price ticker-up">$182.63 +1.4%</span>
+            </div>
+            <div class="ticker-item">
+                <span class="ticker-symbol">MSFT</span>
+                <span class="ticker-price ticker-up">$417.32 +0.8%</span>
+            </div>
+            <div class="ticker-item">
+                <span class="ticker-symbol">GOOG</span>
+                <span class="ticker-price ticker-up">$171.23 +2.1%</span>
+            </div>
+            <div class="ticker-item">
+                <span class="ticker-symbol">AMZN</span>
+                <span class="ticker-price ticker-down">$182.54 -0.3%</span>
+            </div>
+            <div class="ticker-item">
+                <span class="ticker-symbol">META</span>
+                <span class="ticker-price ticker-up">$493.17 +1.7%</span>
+            </div>
+            <div class="ticker-item">
+                <span class="ticker-symbol">TSLA</span>
+                <span class="ticker-price ticker-down">$176.95 -1.2%</span>
+            </div>
+        </div>
+    </div>
+
+    <main class="main">
+        <div class="stock-section">
+            <div class="section-header">
+                <h2 class="section-title">My Watchlist</h2>
+                <div class="filter-section">
+               
+                    </div>
+                </div>
+            </div>
+
+            <div class="stock-grid">
+                <div class="stock-card" onclick="window.location.href='Apple.html'">
+                    <img src="https://logo.clearbit.com/apple.com" alt="Apple" class="stock-logo">
+                    <div class="stock-info">
+                        <div class="stock-name">Apple Inc.</div>
+                        <div class="stock-ticker">AAPL</div>
+                    </div>
+                    <div class="stock-price">
+                        <div class="current-price">$182.63</div>
+                        <div class="change positive">+1.4%</div>
+                    </div>
+                </div>
+
+                <div class="stock-card" onclick="window.location.href='Microsoft.html'">
+                    <img src="https://logo.clearbit.com/microsoft.com" alt="Microsoft" class="stock-logo">
+                    <div class="stock-info">
+                        <div class="stock-name">Microsoft</div>
+                        <div class="stock-ticker">MSFT</div>
+                    </div>
+                    <div class="stock-price">
+                        <div class="current-price">$417.32</div>
+                        <div class="change positive">+0.8%</div>
+                    </div>
+                </div>
+
+                <div class="stock-card" onclick="window.location.href='Google.html'">
+                    <img src="https://logo.clearbit.com/google.com" alt="Google" class="stock-logo">
+                    <div class="stock-info">
+                        <div class="stock-name">Alphabet Inc.</div>
+                        <div class="stock-ticker">GOOG</div>
+                    </div>
+                    <div class="stock-price">
+                        <div class="current-price">$171.23</div>
+                        <div class="change positive">+2.1%</div>
+                    </div>
+                </div>
+
+                <div class="stock-card" onclick="window.location.href='Amazon.html'">
+                    <img src="https://logo.clearbit.com/amazon.com" alt="Amazon" class="stock-logo">
+                    <div class="stock-info">
+                        <div class="stock-name">Amazon</div>
+                        <div class="stock-ticker">AMZN</div>
+                    </div>
+                    <div class="stock-price">
+                        <div class="current-price">$182.54</div>
+                        <div class="change negative">-0.3%</div>
+                    </div>
+                </div>
+
+                <div class="stock-card" onclick="window.location.href='Meta.html'">
+                    <img src="https://logo.clearbit.com/meta.com" alt="Meta" class="stock-logo">
+                    <div class="stock-info">
+                        <div class="stock-name">Meta Platforms</div>
+                        <div class="stock-ticker">META</div>
+                    </div>
+                    <div class="stock-price">
+                        <div class="current-price">$493.17</div>
+                        <div class="change positive">+1.7%</div>
+                    </div>
+                </div>
+
+                <div class="stock-card" onclick="window.location.href='Tesla.html'">
+                    <img src="https://logo.clearbit.com/tesla.com" alt="Tesla" class="stock-logo">
+                    <div class="stock-info">
+                        <div class="stock-name">Tesla Inc.</div>
+                        <div class="stock-ticker">TSLA</div>
+                    </div>
+                    <div class="stock-price">
+                        <div class="current-price">$176.95</div>
+                        <div class="change negative">-1.2%</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="footer-content">
+            <div class="footer-left">
+                <div class="footer-logo">NOVA CAPITAL</div>
+                <p>Your trusted partner for stock market investments and financial guidance. We provide real-time data and expert analysis to help you make informed decisions.</p>
+            </div>
+            <div class="footer-right">
+                <div class="footer-column">
+                    <h3>Services</h3>
+                    <ul class="footer-links">
+                        <li><a href="#">Portfolio Management</a></li>
+                        <li><a href="#">Stock Trading</a></li>
+                        <li><a href="#">Market Analysis</a></li>
+                        <li><a href="#">Financial Advising</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h3>Support</h3>
+                    <ul class="footer-links">
+                        <li><a href="#">Help Center</a></li>
+                        <li><a href="#">Contact Us</a></li>
+                        <li><a href="#">FAQs</a></li>
+                        <li><a href="#">Terms of Service</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2025 Nova Capital. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        // You can add JavaScript functionality here
+        document.querySelectorAll('.stock-card').forEach(card => {
+            card.addEventListener('click', function() {
+                const stockUrl = this.getAttribute('data-url');
+                if (stockUrl) {
+                    window.location.href = stockUrl;
+                }
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,638 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Amazon Dashboard | Nova Capital</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Include your CSS from previous examples -->
+    <style>
+        :root {
+            --primary: #00997b;
+            --primary-dark: #008870;
+            --background: #f5f7f8;
+            --text: #333333;
+            --light: #ffffff;
+            --gray: #e2e8f0;
+            --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --positive: #22c55e;
+            --negative: #ef4444;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: var(--background);
+            color: var(--text);
+            line-height: 1.6;
+        }
+        
+        .header {
+            background-color: var(--light);
+            color: var(--text);
+            padding: 1rem 0;
+            width: 100%;
+            border-bottom: 1px solid var(--gray);
+            box-shadow: var(--shadow);
+        }
+        
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: bold;
+            font-size: 1.5rem;
+            color: var(--primary);
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+        }
+        
+        .nav-links a {
+            text-decoration: none;
+            color: var(--text);
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+        
+        .nav-links a:hover {
+            color: var(--primary);
+        }
+        
+        .ticker-container {
+            background: var(--primary);
+            width: 100%;
+            overflow: hidden;
+            padding: 0.5rem 0;
+            color: white;
+        }
+        
+        .ticker {
+            white-space: nowrap;
+            display: inline-block;
+            animation: ticker 50s linear infinite;
+            padding-left: 100%;
+        }
+        
+        .ticker-item {
+            display: inline-block;
+            padding: 0 2rem;
+        }
+        
+        .ticker-symbol {
+            font-weight: bold;
+        }
+        
+        .ticker-price {
+            margin-left: 0.5rem;
+        }
+        
+        .ticker-up {
+            color: var(--light);
+        }
+        
+        .ticker-down {
+            color: var(--light);
+            opacity: 0.9;
+        }
+        
+        @keyframes ticker {
+            0% {
+                transform: translateX(0);
+            }
+            100% {
+                transform: translateX(-100%);
+            }
+        }
+        
+        .main {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+        }
+        
+        .section-title {
+            font-size: 1.4rem;
+            color: var(--text);
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+        }
+        
+        .chart-container, .real-time-info, .transaction-container {
+            background: var(--light);
+            border-radius: 0.5rem;
+            padding: 1.5rem;
+            box-shadow: var(--shadow);
+            margin-bottom: 2rem;
+        }
+        
+        canvas {
+            width: 100% !important;
+            height: 400px !important;
+        }
+        
+        .real-time-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+        }
+        
+        .info-card {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .info-label {
+            font-size: 0.9rem;
+            color: #666;
+            margin-bottom: 0.5rem;
+        }
+        
+        .info-value {
+            font-size: 1.8rem;
+            font-weight: 600;
+        }
+        
+        .balance-value {
+            color: var(--primary);
+        }
+        
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin: 2rem 0;
+        }
+        
+        .input-field {
+            padding: 0.8rem 1rem;
+            border-radius: 0.5rem;
+            border: 1px solid var(--gray);
+            font-size: 1rem;
+            width: 120px;
+            text-align: center;
+        }
+        
+        .action-button {
+            background-color: var(--primary);
+            color: white;
+            padding: 0.8rem 1.5rem;
+            border: none;
+            border-radius: 0.5rem;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .sell-button {
+            background-color: var(--text);
+        }
+        
+        .action-button:hover {
+            background-color: var(--primary-dark);
+        }
+        
+        .sell-button:hover {
+            background-color: #444;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        th, td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid var(--gray);
+        }
+        
+        th {
+            font-weight: 600;
+            color: #666;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+        }
+        
+        .buy-type {
+            color: var(--positive);
+            font-weight: 600;
+        }
+        
+        .sell-type {
+            color: var(--negative);
+            font-weight: 600;
+        }
+        
+        footer {
+            background-color: var(--light);
+            color: var(--text);
+            padding: 2rem 0;
+            margin-top: 3rem;
+            border-top: 1px solid var(--gray);
+        }
+        
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            justify-content: space-between;
+        }
+        
+        .footer-left {
+            max-width: 400px;
+        }
+        
+        .footer-logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--primary);
+            margin-bottom: 1rem;
+        }
+        
+        .footer-right {
+            display: flex;
+            gap: 3rem;
+        }
+        
+        .footer-column h3 {
+            font-size: 1.2rem;
+            margin-bottom: 1rem;
+            color: var(--text);
+        }
+        
+        .footer-links {
+            list-style: none;
+        }
+        
+        .footer-links li {
+            margin-bottom: 0.5rem;
+        }
+        
+        .footer-links a {
+            color: #666;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+        
+        .footer-links a:hover {
+            color: var(--primary);
+        }
+        
+        .footer-bottom {
+            text-align: center;
+            padding-top: 2rem;
+            margin-top: 2rem;
+            border-top: 1px solid var(--gray);
+            font-size: 0.9rem;
+            color: #999;
+            max-width: 1200px;
+            margin: 2rem auto 0;
+            padding: 2rem 2rem 0;
+        }
+        
+        @media (max-width: 768px) {
+            .real-time-info {
+                grid-template-columns: 1fr;
+            }
+            
+            .controls {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .footer-content {
+                flex-direction: column;
+                gap: 2rem;
+            }
+            
+            .footer-right {
+                flex-direction: column;
+                gap: 1.5rem;
+            }
+            
+            .input-field {
+                width: 100%;
+                max-width: 300px;
+            }
+            
+            .action-button {
+                width: 100%;
+                max-width: 300px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="header-content">
+            <div class="logo">NOVA CAPITAL</div>
+            <div class="nav-links">
+                
+                <a href="dash1.php">Dashboard</a> <!-- Relative to amazon/ -->
+                <a href="dashboard.html">News</a>
+                <a href="../stock-history.php">Transactions</a>
+    
+            </div>
+        </div>
+    </header>
+
+    <main class="main">
+        <h2 class="section-title">Live Stock Prices</h2>
+        
+        <div class="chart-container">
+            
+            <canvas id="stockChart"></canvas>
+        </div>
+        
+        <div class="real-time-info">
+            <div class="info-card">
+                <div class="info-label">Current Stock Price</div>
+                <div class="info-value">$<span id="currentPrice">100.00</span></div>
+            </div>
+            <div class="info-card">
+                <div class="info-label">Account Balance</div>
+                <div class="info-value balance-value">$<span id="balance">10000.00</span></div>
+            </div>
+            <div class="info-card">
+                <div class="info-label">Owned Stocks</div>
+                <div class="info-value"><span id="ownedStocks">0</span> shares</div>
+            </div>
+        </div>
+        
+        <div class="controls">
+            <input type="number" id="amount" placeholder="Enter quantity" min="1" class="input-field">
+            <button onclick="buyStock()" class="action-button">Buy</button>
+            <button onclick="sellStock()" class="action-button sell-button">Sell</button>
+        </div>
+        
+        <h2 class="section-title">Transaction History</h2>
+        <div class="transaction-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Date & Time</th>
+                        <th>Type</th>
+                        <th>Quantity</th>
+                        <th>Price/Share</th>
+                    </tr>
+                </thead>
+                <tbody id="historyTable"></tbody>
+            </table>
+        </div>
+    </main>
+
+    <script>
+        let csrfToken = '';
+        let balance = 0;
+        let ownedStocks = 0;
+        let stockPrices = generateStockPrices(100);
+        let labels = Array.from({ length: 100 }, (_, i) => `Day ${i + 1}`);
+        
+        // Chart setup (assuming it was defined earlier in your original code)
+        const ctx = document.getElementById("stockChart").getContext("2d");
+        const stockChart = new Chart(ctx, {
+            type: "line",
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: "Stock Price ($)",
+                    data: stockPrices,
+                    borderColor: "#00997b",
+                    backgroundColor: "rgba(0, 153, 123, 0.1)",
+                    borderWidth: 2,
+                    fill: true,
+                    tension: 0.2,
+                    pointRadius: 0,
+                    pointHoverRadius: 5,
+                    pointHoverBackgroundColor: "#00997b"
+                }]
+            },
+            options: {
+                responsive: true,
+                animation: { duration: 500 },
+                plugins: {
+                    legend: {
+                        labels: {
+                            color: "#333333"
+                        }
+                    }
+                },
+                scales: {
+                    x: { 
+                        title: { 
+                            display: true, 
+                            text: "Days", 
+                            color: "#333333" 
+                        },
+                        grid: {
+                            color: "rgba(0,0,0,0.05)"
+                        },
+                        ticks: {
+                            color: "#666666"
+                        }
+                    },
+                    y: { 
+                        title: { 
+                            display: true, 
+                            text: "Stock Price ($)", 
+                            color: "#333333" 
+                        },
+                        grid: {
+                            color: "rgba(0,0,0,0.05)"
+                        },
+                        ticks: {
+                            color: "#666666"
+                        }
+                    }
+                }
+            }
+        });
+        
+        // Fetch initial data
+        async function initialize() {
+        try {
+            // Get CSRF token
+            const tokenResponse = await fetch('get_csrf_token.php');
+            const tokenData = await tokenResponse.json();
+            csrfToken = tokenData.csrf_token;
+    
+            // Get balance
+            const balanceResponse = await fetch('get_balance.php');
+            const balanceData = await balanceResponse.json();
+            balance = parseFloat(balanceData.balance); // Ensure balance is a number
+            document.getElementById("balance").innerText = balance.toFixed(2);
+    
+            // Get owned stocks
+            const stocksResponse = await fetch('get_owned_stocks_amazon.php');
+            const stocksData = await stocksResponse.json();
+            ownedStocks = parseInt(stocksData.owned) || 0; // Ensure ownedStocks starts as a number
+            document.getElementById("ownedStocks").innerText = ownedStocks;
+    
+            // Load transaction history
+            await loadTransactionHistory();
+        } catch (error) {
+            console.error("Initialization error:", error);
+        }
+    }
+        
+        function generateStockPrices(days) {
+            let prices = [];
+            let price = 100;
+            for (let i = 0; i < days; i++) {
+                price += (Math.random() - 0.5) * 5;
+                prices.push(parseFloat(price.toFixed(2)));
+            }
+            return prices;
+        }
+        
+        function updateStockPrice() {
+            let lastPrice = stockPrices[stockPrices.length - 1];
+            let newPrice = lastPrice + (Math.random() - 0.5) * 2;
+            newPrice = parseFloat(newPrice.toFixed(2));
+        
+            stockPrices.push(newPrice);
+            stockPrices.shift();
+            labels.push(`Day ${labels.length + 1}`);
+            labels.shift();
+        
+            stockChart.data.datasets[0].data = stockPrices;
+            stockChart.data.labels = labels;
+            stockChart.update();
+        
+            let priceEl = document.getElementById("currentPrice");
+            priceEl.innerText = newPrice;
+        
+            if (newPrice > lastPrice) {
+                priceEl.style.color = "var(--positive)";
+            } else if (newPrice < lastPrice) {
+                priceEl.style.color = "var(--negative)";
+            } else {
+                priceEl.style.color = "inherit";
+            }
+        }
+        
+        async function loadTransactionHistory() {
+    try {
+        const response = await fetch('get_transactions.php');
+        const data = await response.json();
+        
+        if (data.success) {
+            const tbody = document.getElementById("historyTable");
+            tbody.innerHTML = '';
+            
+            // Filter for only AMZN transactions
+            const amazonTransactions = data.transactions.filter(tx => tx.stock_symbol === 'AMZN');
+            
+            amazonTransactions.forEach(tx => {
+                const typeClass = tx.transaction_type === 'buy' ? 'buy-type' : 'sell-type';
+                const row = `
+                    <tr>
+                        <td>${new Date(tx.transaction_date).toLocaleString()}</td>
+                        <td class="${typeClass}">${tx.transaction_type.charAt(0).toUpperCase() + tx.transaction_type.slice(1)}</td>
+                        <td>${tx.quantity}</td>
+                        <td>$${parseFloat(tx.price_per_share).toFixed(2)}</td>
+                    </tr>
+                `;
+                tbody.innerHTML += row;
+            });
+        }
+    } catch (error) {
+        console.error("Error loading transaction history:", error);
+    }
+}
+        
+async function saveTransaction(type, amount, price) {
+        try {
+            const response = await fetch("amazon_transaction.php", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ 
+                    transaction_type: type,
+                    quantity: amount,
+                    price_per_share: price,
+                    stock_symbol: "AMZN",
+                    stock_name: "Amazon Inc.",
+                    csrf_token: csrfToken
+                })
+            });
+            
+            const data = await response.json();
+            
+            if (data.success) {
+                balance = parseFloat(data.new_balance); // Ensure balance is a number
+                // Update ownedStocks with proper numeric addition/subtraction
+                ownedStocks = type === 'buy' ? 
+                    ownedStocks + parseInt(amount) : 
+                    ownedStocks - parseInt(amount);
+                updateUI();
+                await loadTransactionHistory();
+            } else {
+                alert(data.message);
+            }
+        } catch (error) {
+            console.error("Transaction error:", error);
+            alert("Error processing transaction");
+        }
+    }
+
+    function buyStock() {
+        const amount = parseInt(document.getElementById("amount").value);
+        const currentPrice = stockPrices[stockPrices.length - 1];
+        
+        if (isNaN(amount) || amount <= 0) {
+            alert("Please enter a valid quantity.");
+            return;
+        }
+        
+        saveTransaction("buy", amount, currentPrice);
+    }
+    
+    function sellStock() {
+        const amount = parseInt(document.getElementById("amount").value);
+        const currentPrice = stockPrices[stockPrices.length - 1];
+        
+        if (isNaN(amount) || amount <= 0) {
+            alert("Please enter a valid quantity.");
+            return;
+        }
+        
+        saveTransaction("sell", amount, currentPrice);
+    }
+    
+    function updateUI() {
+        document.getElementById("balance").innerText = balance.toFixed(2);
+        document.getElementById("ownedStocks").innerText = ownedStocks; // No need to convert here
+    }
+        
+    function updateUI() {
+        document.getElementById("balance").innerText = balance.toFixed(2);
+        document.getElementById("ownedStocks").innerText = ownedStocks; // No need to convert here
+    }
+        
+        // Initialize when page loads
+        initialize();
+        setInterval(updateStockPrice, 1000);
+        </script>
+</body>
+</html>
