@@ -1,236 +1,290 @@
-🚀 Overview
-Nova Capital is a comprehensive web-based stock market portfolio management system that allows users to simulate stock trading, track their investments, and stay updated with market news. Built with modern web technologies and featuring a clean, intuitive interface.
-✨ Features
-🏠 Home Page
+# 🐂 Nova Capital — Stock Portfolio Management System
 
-Company overview and mission statement
-Featured company portfolio values
-Real-time market highlights
-Easy navigation to login/signup
+> **v2 Redesigned & Fully Debugged by [Abhinav](https://github.com/abhii-navv)**
+> Forked from [HackstreetBoyzz/Stock-Market-Trading-web-Application](https://github.com/HackstreetBoyzz/Stock-Market-Trading-web-Application)
 
-🔐 Authentication System
+A premium web-based stock market simulator built with PHP, MySQL.
+Trade 6 major tech companies with **$10,000 in virtual capital**, track your portfolio in real-time, and stay updated with market news.
 
-Secure user registration and login
-New user bonus: $10,000 starting capital
-Session management
-Password encryption
+---
 
-📊 Dashboard
+## 📋 Table of Contents
 
-Personalized user dashboard
-Quick access to all major features
-Portfolio overview
-Account balance display
+- [Overview](#-overview)
+- [What's New in v2](#-whats-new-in-v2)
+- [Repository Structure](#-repository-structure)
+- [Tech Stack](#-tech-stack)
+- [Supported Companies](#-supported-companies)
+- [Database Setup](#-database-setup)
+- [Installation and Setup](#-installation-and-setup)
+- [All Bug Fixes](#-all-bug-fixes)
+- [Security Notes](#-security-notes)
+- [Author](#-author)
 
-📈 Core Features
+---
 
-Daily Stock Averages - Track daily market performance
-Buy/Sell Stocks - Trade stocks from 6 featured companies
-Transaction History - Complete record of all trades
-Stock News - Latest market news and updates
-Feedback System - User feedback and support
+## 🚀 Overview
 
-🛠 Tech Stack
-Frontend
+Nova Capital is a comprehensive stock portfolio simulator that gives every new user **$10,000 in virtual capital** to invest across 6 featured companies. Users can register, log in, trade stocks, track holdings in real-time, view transaction history, and read market news.
 
-HTML5 - Structure and content
-CSS3 - Styling and responsive design
-JavaScript - Interactive functionality and dynamic content
+| Folder | Version | Status |
+|--------|---------|--------|
+| `nova_capital/` | v1 | Original — basic UI, core bugs fixed |
+| `nova_capital_new/` | v2 | Full redesign — premium theme, real-time dashboard, per-user isolation ✅ |
 
-Backend
+---
 
-PHP - Server-side logic and API endpoints
-MySQL - Database management
+## ✨ What's New in v2
 
-Database Structure
+### 🎨 Full Premium UI Redesign
 
-User Authentication Table - Stores login credentials and user data
-Transaction Table - Records all buy/sell transactions
+Every page has been completely redesigned with a consistent fintech aesthetic:
 
-🚀 Installation & Setup
-Prerequisites
+- **Fonts:** Playfair Display (headings) · DM Sans (body) · DM Mono (numbers/tickers)
+- **Colors:** Deep green `#003d30` · Mid green `#00694f` · Bright accent `#00c896` · Gold `#c9a84c` · Off-white `#f4f1eb`
+- **Components:** Sticky dark-green header · Hero banners · Stat pill cards · Live badge indicators · Pill-style buy/sell badges · Dark-green three-column footer
 
-Web server (Apache/Nginx)
-PHP 7.4 or higher
-MySQL 5.7 or higher
-Modern web browser
+### 📄 Pages Redesigned
 
-# Nova Capital - Detailed Project Structure
+| Page | Changes |
+|------|---------|
+| `Homepage.html` | Full landing page — hero, feature grid, CTA buttons |
+| `signin.php` | Premium auth card with Nova Capital branding |
+| `signup.php` | Matching registration card |
+| `main.html` | Watchlist grid — animated ticker, hover effects |
+| `dash1.php` | Live stat pills, quick-access cards, real-time polling |
+| `Apple.html` to `Tesla.html` | Dark hero, stats strip, Chart.js chart, trade card with cost estimator, history table |
+| `stock-history.php` | Stats row, filtered table, net investment summary bar |
+| `dashboard.html` | Category filter chips, expandable news cards |
+| `Average.html` | Range bars, 52W high/low, live clock |
+| `Feedback.html` | Two-column form, gold star rating, toast notifications, review cards |
 
-This document provides a comprehensive overview of the Nova Capital project structure based on the actual file organization.
+### ⚡ Real-Time Dashboard
 
-## 📁 Complete File Structure
+- `dash1.php` polls `?refresh=1` every 5 seconds
+- Balance, Total Trades, and Portfolio Return update live without page reload
+- Updates instantly after any trade on any stock page
 
-### Root Directory Files
+### 🔐 Per-User Data Isolation
 
-#### HTML Pages
-- **Homepage.html** - Main landing page with company overview
-- **main.html** - Main application interface
-- **dashboard.html** - User dashboard with portfolio overview
-- **Average.html** - Daily stock averages and market trends
-- **news.html** - Latest stock market news
-- **feedback.html** - User feedback and contact form
-- **signin.html** - User sign-in page
-- **signup.html** - New user registration page
+All PHP files corrected to use the safe session pattern:
 
-#### PHP Backend Files
-- **login.php** - Handles user authentication
-- **registration.php** - Processes new user registrations
-- **logout.php** - Manages user logout
-- **config.php** - Database configuration and connection
-- **his.php** - Transaction history processing
-- **stock-history.php** - Stock price history data
-- **debug.php** - Debug utilities and error handling
-- **dash1.php** - Dashboard data processing and API
+```php
+if (session_status() === PHP_SESSION_NONE) session_start();
+require_once 'config.php';
+```
 
-#### Node.js Files
-- **package.json** - Node.js dependencies and scripts
-- **package-lock.json** - Locked dependency versions
-- **index.js** - Main JavaScript application file
-- **node_modules/** - Node.js package dependencies
+---
 
-## 🏢 Company-Specific Files
+## 📂 Repository Structure
 
-### Individual Company Pages
-Each major company has its own dedicated HTML page:
+```
+Stock-Market-Trading-web-Application/
+│
+├── nova_capital/                    ← v1 Original version
+│   ├── Homepage.html
+│   ├── main.html
+│   ├── dashboard.html
+│   ├── Average.html
+│   ├── Feedback.html
+│   ├── signup.php
+│   ├── signin.php
+│   ├── login.php
+│   ├── registration.php
+│   ├── logout.php
+│   ├── config.example.php
+│   ├── dash1.php
+│   ├── stock-history.php
+│   ├── get_balance.php
+│   ├── get_transactions.php
+│   ├── get_csrf_token.php
+│   ├── get_owned_stocks_*.php       ← 6 files
+│   ├── Apple.html → Tesla.html      ← 6 stock trading pages
+│   └── apple_transaction.php → tesla_transaction.php
+│
+├── nova_capital_new/                ← v2 Redesigned version ✅
+│   └── (same structure — fully redesigned and debugged)
+│
+├── .gitignore
+└── README.md
+```
 
-1. **Amazon.html** - Amazon (AMZN) stock trading page
-2. **Apple.html** - Apple (AAPL) stock trading page  
-3. **Google.html** - Google/Alphabet (GOOGL) stock trading page
-4. **Meta.html** - Meta Platforms (META) stock trading page
-5. **Microsoft.html** - Microsoft (MSFT) stock trading page
-6. **Tesla.html** - Tesla (TSLA) stock trading page
+---
 
-### Company Transaction Handlers
-Individual PHP files handle buy/sell transactions for each company:
+## 🛠 Tech Stack
 
-- **amazon_transaction.php** - Amazon stock transactions
-- **apple_transaction.php** - Apple stock transactions
-- **google_transaction.php** - Google stock transactions
-- **meta_transaction.php** - Meta stock transactions
-- **microsoft_transaction.php** - Microsoft stock transactions
-- **tesla_transaction.php** - Tesla stock transactions
+| Layer | Technology |
+|-------|-----------|
+| Frontend | HTML5, CSS3, JavaScript |
+| Backend | PHP 7.4+ |
+| Database | MySQL 5.7+ |
+| Charts | Chart.js |
+| Icons | Font Awesome 6 |
+| Fonts | Google Fonts (Playfair Display, DM Sans, DM Mono) |
+| DB Abstraction | PDO with prepared statements |
 
-### Company Stock Data APIs
-PHP files to retrieve user's owned stocks for each company:
+---
 
-- **get_owned_stocks_amazon.php** - Amazon holdings
-- **get_owned_stocks_apple.php** - Apple holdings
-- **get_owned_stocks_google.php** - Google holdings
-- **get_owned_stocks_meta.php** - Meta holdings
-- **get_owned_stocks_microsoft.php** - Microsoft holdings
-- **get_owned_stocks_tesla.php** - Tesla holdings
+## 🏢 Supported Companies
 
-### Company Logos and Assets
-High-quality company logos and branding assets:
+| Company | Symbol |
+|---------|--------|
+| Apple | AAPL |
+| Amazon | AMZN |
+| Google | GOOGL |
+| Meta | META |
+| Microsoft | MSFT |
+| Tesla | TSLA |
 
-- **amazon.png** - Amazon logo (215 KB)
-- **apple.png** - Apple logo (83 KB)
-- **google.png** - Google logo (18 KB)
-- **meta.png** - Meta logo (58 KB)
-- **microsoft.png** - Microsoft logo (39 KB)
-- **fb.png** - Facebook logo (4 KB)
+---
 
-## 🔧 Utility and Support Files
+## 🗄 Database Setup
 
-### User Management
-- **get_balance.php** - Retrieve user account balance
-- **get_csrf_token.php** - Generate CSRF protection tokens
-- **get_transactions.php** - Fetch user transaction history
+Run this once in MySQL or phpMyAdmin:
 
-### Additional Assets
-- **Bull-removebg-preview.png** - Bull market icon (86 KB)
-- **Qd6QO301.svg** - SVG graphics/icons (6 KB)
+```sql
+CREATE DATABASE IF NOT EXISTS nova_capital;
+USE nova_capital;
 
-### Backend Directory
-- **php/** - Contains additional PHP backend files and utilities
+CREATE TABLE IF NOT EXISTS users (
+    id          INT AUTO_INCREMENT PRIMARY KEY,
+    username    VARCHAR(50)   NOT NULL UNIQUE,
+    email       VARCHAR(100)  NOT NULL UNIQUE,
+    password    VARCHAR(255)  NOT NULL,
+    balance     DECIMAL(15,2) DEFAULT 10000.00,
+    created_at  DATETIME      DEFAULT CURRENT_TIMESTAMP
+);
 
-## 📊 File Size Distribution
+CREATE TABLE IF NOT EXISTS transactions (
+    id                INT AUTO_INCREMENT PRIMARY KEY,
+    user_id           INT                NOT NULL,
+    stock_symbol      VARCHAR(10)        NOT NULL,
+    stock_name        VARCHAR(100)       NOT NULL,
+    transaction_type  ENUM('buy','sell') NOT NULL,
+    quantity          INT                NOT NULL,
+    price_per_share   DECIMAL(10,2)      NOT NULL,
+    total_amount      DECIMAL(10,2)      NOT NULL,
+    transaction_fees  DECIMAL(10,2)      DEFAULT 0.00,
+    transaction_date  DATETIME           DEFAULT CURRENT_TIMESTAMP,
+    status            VARCHAR(20)        DEFAULT 'completed',
+    notes             TEXT,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);
 
-### Large Files (>50 KB)
-- package-lock.json (66 KB) - Node.js dependencies
-- meta.png (58 KB) - Meta company logo
-- Bull-removebg-preview.png (86 KB) - Bull market icon
+CREATE TABLE IF NOT EXISTS account_settings (
+    user_id             INT         NOT NULL PRIMARY KEY,
+    notification_email  TINYINT(1)  DEFAULT 1,
+    two_factor_auth     TINYINT(1)  DEFAULT 0,
+    account_type        VARCHAR(20) DEFAULT 'basic',
+    account_status      VARCHAR(20) DEFAULT 'active',
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);
+```
 
-### Medium Files (10-50 KB)
-- Homepage.html (35 KB) - Main landing page
-- news.html (23 KB) - News page
-- microsoft.png (39 KB) - Microsoft logo
-- Various HTML pages (13-19 KB each)
+---
 
-### Small Files (<10 KB)
-- Most PHP transaction handlers (6 KB each)
-- Authentication files (1-2 KB each)
-- Utility scripts and configuration files
+## ⚙️ Installation and Setup
 
-## 🔄 Data Flow Architecture
+### Prerequisites
 
-### User Authentication Flow
+- PHP 7.4 or higher
+- MySQL 5.7 or higher
+- Local web server or PHP built-in server
 
-signin.html → login.php → config.php → dashboard.html
-signup.html → registration.php → config.php → main.html
+### Step 1 — Enable PHP MySQL Drivers
 
+Open `C:\php\php.ini` and uncomment:
 
-### Stock Trading Flow
+```ini
+extension_dir = "C:\php\ext"
+extension=mysqli
+extension=pdo_mysql
+```
 
-Company Page (e.g., Amazon.html) → 
-amazon_transaction.php → 
-config.php (database) → 
-get_owned_stocks_amazon.php → 
-Updated Portfolio Display
+### Step 2 — Configure Credentials
 
+Copy `config.example.php` → `config.php` and fill in your values:
 
-### Dashboard Data Flow
+```php
+$host    = 'localhost';
+$db      = 'nova_capital';
+$user    = 'root';
+$pass    = 'your_password';
+$charset = 'utf8mb4';
+```
 
-dashboard.html → 
-dash1.php → 
-get_balance.php + get_transactions.php → 
-Portfolio Summary Display
+### Step 3 — Run Database SQL
 
+Paste and run the 3 `CREATE TABLE` statements above in phpMyAdmin.
 
-## 🗄 Database Integration
+### Step 4 — Start the Server
 
-### Core Tables
-Based on the PHP files, the system uses these main database tables:
+```powershell
+# To run v2:
+cd nova_capital_new
+php -S localhost:8000
+```
 
-1. *Users Table* - Managed by login.php, registration.php
-2. *Transactions Table* - Updated by individual *_transaction.php files
-3. *Stock Holdings* - Tracked by get_owned_stocks_*.php files
+### Step 5 — Open in Browser
 
-### Data Consistency
-- Each company has separate transaction handlers ensuring data integrity
-- Balance updates are handled through get_balance.php
-- Transaction history is maintained via his.php and stock-history.php
+```
+http://localhost:8000/Homepage.html
+```
 
-## 🚀 Development Workflow
+> ⚠️ **Always open via `http://localhost:8000/`** — never double-click files. Opening via `file:///` causes NaN balance errors.
 
-### Frontend Development
-1. HTML pages for user interface
-2. Company-specific pages for each stock
-3. Responsive design with integrated styling
+---
 
-### Backend Development  
-1. PHP files handle all server-side logic
-2. Individual handlers for each company's transactions
-3. Separate API endpoints for data retrieval
+## 🐛 All Bug Fixes
 
-### Full-Stack Integration
-1. Node.js for modern JavaScript features
-2. PHP for database operations and business logic
-3. MySQL for data persistence
+### v1 Bug Fixes
 
-## 📝 File Naming Conventions
+| # | File | Problem | Fix |
+|---|------|---------|-----|
+| 1 | `php.ini` | PDO MySQL driver missing | Enabled `extension_dir`, `pdo_mysql`, `mysqli` |
+| 2 | `signup.html` | PHP not executing in `.html` | Renamed to `signup.php` |
+| 3 | `login.php` | Duplicate `:id` parameter caused PDO error | Replaced with `:id1` and `:id2` |
+| 4 | `registration.php` | INSERT included `created_at` column that didn't exist | Removed — auto-fills via DEFAULT |
+| 5 | `signin.php` | `$_SESSION['user_id'] = 1` hardcoded | Removed completely |
+| 6 | `signin.php` | Sign Up link pointed to `signup.html` | Updated to `signup.php` |
+| 7 | Multiple files | DB credentials duplicated everywhere | All use `require_once 'config.php'` |
+| 8 | `registration.php` | `PASSWORD_ARGON2ID` unavailable on some installs | Falls back to `PASSWORD_BCRYPT` |
+| 9 | `config.php` | Raw DB errors shown to users | Logged server-side only |
+| 10 | `main.html` | Stock logos not clipped into circles | Added `overflow:hidden` wrapper |
 
-### HTML Files
-- PascalCase: Homepage.html, Average.html
-- Lowercase: main.html, news.html, feedback.html
+### v2 Bug Fixes (on top of v1)
 
-### PHP Files
-- Lowercase with underscores: amazon_transaction.php
-- Action-based: get_balance.php, get_transactions.php
+| # | File | Problem | Fix |
+|---|------|---------|-----|
+| 11 | `login.php` | `$_SESSION['id'] = 1` hardcoded every login to user #1 | Fixed to `$_SESSION['id'] = $user['id']` |
+| 12 | `dash1.php` | `getDashboardData()` stub — all stats were hardcoded HTML | Rewrote to query real DB values |
+| 13 | All stock `.html` files | Balance showed NaN via `file:///` — CORS blocked PHP fetches | Always serve via `http://localhost:8000/` |
+| 14 | All `*_transaction.php` | CSRF token block commented out — every trade rejected | Restored CSRF token generation in all 6 files |
+| 15 | `get_transactions.php` | Plain `session_start()` — null `user_id` returned everyone's transactions | Fixed session pattern and added `user_id` filter |
+| 16 | All `get_*.php` files | Hardcoded credentials and wrong session pattern | All use `config.php` and correct session start |
+| 17 | `stock-history.php` | Hardcoded credentials and missing `user_id` filter | Fixed all three issues and redesigned the page |
 
-### Image Files
-- Lowercase company names: amazon.png, apple.png
-- Descriptive names: Bull-removebg-preview.png
+---
 
-This structure demonstrates a well-organized, scalable architecture that separates concerns between frontend presentation, backend logic, and data management while maintaining individual handlers for each company's stock operations.
+## 🔒 Security Notes
+
+- `config.php` is excluded from Git via `.gitignore` — **never commit real credentials**
+- Only `config.example.php` with placeholder values is committed
+- All database queries use **PDO prepared statements** to prevent SQL injection
+- CSRF tokens protect all buy/sell transactions
+- Passwords are hashed using `PASSWORD_BCRYPT`
+
+---
+
+## 👤 Author
+
+**Abhinav**
+GitHub: [@abhii-navv](https://github.com/abhii-navv)
+
+> v2 redesign, all bug fixes, per-user data isolation, real-time dashboard, and full deployment setup done by Abhinav.
+
+Forked from [HackstreetBoyzz/Stock-Market-Trading-web-Application](https://github.com/HackstreetBoyzz/Stock-Market-Trading-web-Application)
+
+---
+
+*Nova Capital — Built with 💚 using PHP, MySQL*
